@@ -7,12 +7,13 @@
 //
 
 import Foundation
+import EthanolUtilities
 
 /** ETHKeyboardHandlerProtocol protocol
 
 */
 protocol ETHKeyboardHandlerProtocol {
-  
+	
   /**
     Protocol Callback method to respond to keyboard notifications
   */
