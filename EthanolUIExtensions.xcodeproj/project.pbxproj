@@ -12,6 +12,7 @@
 		3205E29A1B7DCBBB000E14FA /* EthanolUIExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3205E2991B7DCBBB000E14FA /* EthanolUIExtensionsTests.swift */; };
 		3205E2A51B7DCC1F000E14FA /* ETHKeyboardHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3205E2A41B7DCC1F000E14FA /* ETHKeyboardHandlerProtocol.swift */; };
 		3205E2A81B7DCC64000E14FA /* NSObject+ETHKeyboardHandlerObjectExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3205E2A71B7DCC64000E14FA /* NSObject+ETHKeyboardHandlerObjectExtension.swift */; };
+		655A9E351B81FAEB00C1AAB3 /* UIViewController+EthanolExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655A9E341B81FAEB00C1AAB3 /* UIViewController+EthanolExtension.swift */; };
 		F4C3849B1B7E6DB200F2B30A /* EthanolUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4C384981B7E6DA300F2B30A /* EthanolUtilities.framework */; };
 /* End PBXBuildFile section */
 
@@ -35,6 +36,7 @@
 		3205E2A41B7DCC1F000E14FA /* ETHKeyboardHandlerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ETHKeyboardHandlerProtocol.swift; sourceTree = "<group>"; };
 		3205E2A71B7DCC64000E14FA /* NSObject+ETHKeyboardHandlerObjectExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSObject+ETHKeyboardHandlerObjectExtension.swift"; sourceTree = "<group>"; };
 		F4C384981B7E6DA300F2B30A /* EthanolUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = EthanolUtilities.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		655A9E341B81FAEB00C1AAB3 /* UIViewController+EthanolExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+EthanolExtension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +82,7 @@
 			isa = PBXGroup;
 			children = (
 				3205E28D1B7DCBBB000E14FA /* EthanolUIExtensions.h */,
+				655A9E331B81FAEB00C1AAB3 /* UIViewControllerExtension */,
 				3205E2A61B7DCC3F000E14FA /* Keyboard Handlers */,
 				3205E28F1B7DCBBB000E14FA /* Info.plist */,
 			);
@@ -102,6 +105,14 @@
 				3205E2A71B7DCC64000E14FA /* NSObject+ETHKeyboardHandlerObjectExtension.swift */,
 			);
 			name = "Keyboard Handlers";
+			sourceTree = "<group>";
+		};
+		655A9E331B81FAEB00C1AAB3 /* UIViewControllerExtension */ = {
+			isa = PBXGroup;
+			children = (
+				655A9E341B81FAEB00C1AAB3 /* UIViewController+EthanolExtension.swift */,
+			);
+			path = UIViewControllerExtension;
 			sourceTree = "<group>";
 		};
 		F4C3849A1B7E6DA700F2B30A /* Dependencies */ = {
@@ -222,6 +233,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3205E2A81B7DCC64000E14FA /* NSObject+ETHKeyboardHandlerObjectExtension.swift in Sources */,
+				655A9E351B81FAEB00C1AAB3 /* UIViewController+EthanolExtension.swift in Sources */,
 				3205E2A51B7DCC1F000E14FA /* ETHKeyboardHandlerProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
