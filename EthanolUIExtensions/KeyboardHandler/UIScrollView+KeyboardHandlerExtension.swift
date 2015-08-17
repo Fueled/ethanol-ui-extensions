@@ -9,10 +9,6 @@
 import Foundation
 import ObjectiveC
 
-private let keyboardScrollOffsetKey = "keyboardScrollOffsetKey"
-private let scrollViewBottomInsetKey = "scrollViewBottomInsetKey"
-private let scrollViewIndicatorBottomInsetKey = "scrollViewIndicatorBottomInsetKey"
-
 /** ETHKeyboardHandlerScrollviewExtension Extends UIScrollView
 
 */
@@ -40,14 +36,18 @@ public extension UIScrollView {
 
 }
 
+private var keyboardScrollOffsetKey: UInt8 = 3
+private var scrollViewBottomInsetKey: UInt8 = 4
+private var scrollViewIndicatorBottomInsetKey: UInt8 = 5
+
 public extension UIScrollView {
   
   private var keyboardScrollOffset: CGFloat {
     get {
-      return objc_getAssociatedObject(self, keyboardScrollOffsetKey) as? CGFloat ?? CGFloat(0.0)
+      return objc_getAssociatedObject(self, &keyboardScrollOffsetKey) as? CGFloat ?? CGFloat(0.0)
     }
     set (offset) {
-      objc_setAssociatedObject(self, keyboardScrollOffsetKey, offset, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
+      objc_setAssociatedObject(self, &keyboardScrollOffsetKey, offset, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
     }
   }
   
@@ -57,19 +57,19 @@ public extension UIScrollView {
   
   private var scrollViewBottomInset: CGFloat? {
     get {
-      return objc_getAssociatedObject(self, scrollViewBottomInsetKey) as? CGFloat
+      return objc_getAssociatedObject(self, &scrollViewBottomInsetKey) as? CGFloat
     }
     set (offset) {
-      objc_setAssociatedObject(self, scrollViewBottomInsetKey, offset, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
+      objc_setAssociatedObject(self, &scrollViewBottomInsetKey, offset, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
     }
   }
   
   private var scrollViewIndicatorBottomInset: CGFloat? {
     get {
-      return objc_getAssociatedObject(self, scrollViewIndicatorBottomInsetKey) as? CGFloat
+      return objc_getAssociatedObject(self, &scrollViewIndicatorBottomInsetKey) as? CGFloat
     }
     set (offset) {
-      objc_setAssociatedObject(self, scrollViewIndicatorBottomInsetKey, offset, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
+      objc_setAssociatedObject(self, &scrollViewIndicatorBottomInsetKey, offset, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
     }
   }
   

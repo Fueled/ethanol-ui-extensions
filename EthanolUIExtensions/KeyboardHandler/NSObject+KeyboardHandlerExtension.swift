@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ObjectiveC
 
 /** Helper block to convert UIViewAnimationCurve to UIViewAnimationOptions */
 
@@ -41,6 +42,7 @@ public extension NSObject {
   
   /* Remove Observing from keyboard notifications */
   public func eth_DeRegisterForKeyboardNotifications() {
+    self.isObservingNotifications = false
     self.notificationClosure = nil
     NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
     NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardDidShowNotification, object: nil)
@@ -51,7 +53,7 @@ public extension NSObject {
   }
   
   public var eth_isKeyboardShown:Bool {
-    return objc_getAssociatedObject(self, isKeyboardShownKey).boolValue
+    return objc_getAssociatedObject(self, &isKeyboardShownKey).boolValue
   }
   
   public var eth_keyboardNotificationBlock:ETHKeyboardNotificationBlock? {
@@ -70,23 +72,35 @@ public extension NSObject {
 
 //MARK: - Private Methods
 public extension NSObject {
+  
   private func registerForKeyboardNotifications() {
     //Adding Observers with blocks to avoid conflict with namespaces of owning NSObjects
-    NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardWillShowNotification, object: nil, queue: NSOperationQueue.mainQueue()) { [weak self] (notification) -> Void in
-      self?.keyboardWillShow(notification)
+
+    NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardWillShowNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
+      if (self.isObservingNotifications == true) {
+        self.keyboardWillShow(notification)
+      }
     }
     
-    NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardWillHideNotification, object: nil, queue: NSOperationQueue.mainQueue()) { [weak self] (notification) -> Void in
-      self?.keyboardWillHide(notification)
+    NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardWillHideNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
+      if (self.isObservingNotifications == true) {
+        self.keyboardWillHide(notification)
+      }
     }
     
-    NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardDidShowNotification, object: nil, queue: NSOperationQueue.mainQueue()) { [weak self] (notification) -> Void in
-      self?.keyboardDidShow(notification)
+    NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardDidShowNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
+      if (self.isObservingNotifications == true) {
+        self.keyboardDidShow(notification)
+      }
     }
     
-    NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardDidHideNotification, object: nil, queue: NSOperationQueue.mainQueue()) { [weak self] (notification) -> Void in
-      self?.keyboardDidHide(notification)
+    NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardDidHideNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
+      if (self.isObservingNotifications == true) {
+        self.keyboardDidHide(notification)
+      }
     }
+    
+    self.isObservingNotifications = true
   }
   
   private func keyboardWillShow (notification : NSNotification) {
@@ -137,44 +151,56 @@ public extension NSObject {
 
 
 /* State Methods */
-private let keyboardNotificationHandlerClosureKey = "keyboardNotificationHandlerClosureKey"
-private let isKeyboardShownKey = "isKeyboardShownKey"
-private let keyboardSizeKey = "keyboardSizeKey"
+private var keyboardNotificationHandlerClosureKey: UInt8 = 0
+private var isKeyboardShownKey: UInt8 = 1
+private var keyboardSizeKey: UInt8 = 2
+private var isObservingNotificationsKey: UInt8 = 3
 
 public extension NSObject {
   /* Keyboard State */
   private func setIsKeyboardShown(isShown:Bool) {
-    objc_setAssociatedObject(self, keyboardNotificationHandlerClosureKey, isShown, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
+    objc_setAssociatedObject(self, &isKeyboardShownKey, isShown, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
+  }
+  
+  public var isObservingNotifications:Bool {
+    get {
+      return objc_getAssociatedObject(self, &isObservingNotificationsKey).boolValue ?? false
+    }
+    set (value) {
+      objc_setAssociatedObject(self, &isObservingNotificationsKey, NSNumber(bool: value), objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
+    }
   }
   
   private var keyboardSize:CGSize {
     get {
-      return objc_getAssociatedObject(self, keyboardSizeKey).CGSizeValue()
+      return objc_getAssociatedObject(self, &keyboardSizeKey).CGSizeValue()
     }
     set (value) {
-      objc_setAssociatedObject(self, keyboardSizeKey, NSValue(CGSize:value), objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
+      objc_setAssociatedObject(self, &keyboardSizeKey, NSValue(CGSize:value), objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
     }
   }
   
   /* Keyboard Notification Closure */
   
-  private class KeyboardNotificationHandlerClosure {
-    var notificationClosure:ETHKeyboardNotificationBlock?
-  }
-  
   private var notificationClosure:ETHKeyboardNotificationBlock? {
     get {
-      let closure = objc_getAssociatedObject(self, keyboardNotificationHandlerClosureKey) as? KeyboardNotificationHandlerClosure
-      return closure?.notificationClosure
+      let object = objc_getAssociatedObject(self, &keyboardNotificationHandlerClosureKey)
+      let wrapper = object as? KeyboardNotificationHandlerWrapper
+      return wrapper?.notificationClosure
     }
     set (closure) {
       if closure != nil {
-        let newClosureClass = KeyboardNotificationHandlerClosure()
-        newClosureClass.notificationClosure = closure
-        objc_setAssociatedObject(self, keyboardNotificationHandlerClosureKey, newClosureClass, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN) // This is retain and not copy because we now store the closure encapsulated within a class since we cannot store it directly.
+        let wrapperClass = KeyboardNotificationHandlerWrapper()
+        wrapperClass.notificationClosure = closure
+        objc_setAssociatedObject(self, &keyboardNotificationHandlerClosureKey, wrapperClass, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN) // This is retain and not copy because we now store the closure encapsulated within a class since we cannot store it directly.
       } else {
-        objc_setAssociatedObject(self, keyboardNotificationHandlerClosureKey, nil, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+        objc_setAssociatedObject(self, &keyboardNotificationHandlerClosureKey, nil, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
       }
     }
   }
 }
+
+private class KeyboardNotificationHandlerWrapper {
+  var notificationClosure:ETHKeyboardNotificationBlock?
+}
+
