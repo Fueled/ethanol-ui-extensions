@@ -10,10 +10,10 @@
 		3205E28E1B7DCBBB000E14FA /* EthanolUIExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 3205E28D1B7DCBBB000E14FA /* EthanolUIExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3205E2951B7DCBBB000E14FA /* EthanolUIExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3205E28A1B7DCBBB000E14FA /* EthanolUIExtensions.framework */; };
 		3205E29A1B7DCBBB000E14FA /* EthanolUIExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3205E2991B7DCBBB000E14FA /* EthanolUIExtensionsTests.swift */; };
-		3205E2A51B7DCC1F000E14FA /* ETHKeyboardHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3205E2A41B7DCC1F000E14FA /* ETHKeyboardHandlerProtocol.swift */; };
-		3205E2A81B7DCC64000E14FA /* NSObject+ETHKeyboardHandlerObjectExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3205E2A71B7DCC64000E14FA /* NSObject+ETHKeyboardHandlerObjectExtension.swift */; };
 		655A9E351B81FAEB00C1AAB3 /* UIViewController+EthanolExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655A9E341B81FAEB00C1AAB3 /* UIViewController+EthanolExtension.swift */; };
 		65A34AE21B81E2E600034E8F /* UINavigationItem+EthanolExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A34AE11B81E2E600034E8F /* UINavigationItem+EthanolExtension.swift */; };
+		32C26FFB1B81DEBA00A154CF /* NSObject+KeyboardHandlerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C26FFA1B81DEBA00A154CF /* NSObject+KeyboardHandlerExtension.swift */; };
+		32C26FFD1B81E24100A154CF /* UIScrollView+KeyboardHandlerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C26FFC1B81E24100A154CF /* UIScrollView+KeyboardHandlerExtension.swift */; };
 		F4C275531B83B3D700838B17 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4C275511B83B3D700838B17 /* CocoaLumberjack.framework */; };
 		F4C275541B83B3D700838B17 /* EthanolTools.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4C275521B83B3D700838B17 /* EthanolTools.framework */; };
 		F4C3849B1B7E6DB200F2B30A /* EthanolUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4C384981B7E6DA300F2B30A /* EthanolUtilities.framework */; };
@@ -36,8 +36,8 @@
 		3205E2941B7DCBBB000E14FA /* EthanolUIExtensionsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EthanolUIExtensionsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3205E2991B7DCBBB000E14FA /* EthanolUIExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthanolUIExtensionsTests.swift; sourceTree = "<group>"; };
 		3205E29B1B7DCBBB000E14FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		3205E2A41B7DCC1F000E14FA /* ETHKeyboardHandlerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ETHKeyboardHandlerProtocol.swift; sourceTree = "<group>"; };
-		3205E2A71B7DCC64000E14FA /* NSObject+ETHKeyboardHandlerObjectExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSObject+ETHKeyboardHandlerObjectExtension.swift"; sourceTree = "<group>"; };
+		32C26FFA1B81DEBA00A154CF /* NSObject+KeyboardHandlerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "NSObject+KeyboardHandlerExtension.swift"; path = "KeyboardHandler/NSObject+KeyboardHandlerExtension.swift"; sourceTree = "<group>"; };
+		32C26FFC1B81E24100A154CF /* UIScrollView+KeyboardHandlerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIScrollView+KeyboardHandlerExtension.swift"; path = "KeyboardHandler/UIScrollView+KeyboardHandlerExtension.swift"; sourceTree = "<group>"; };
 		F4C275511B83B3D700838B17 /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CocoaLumberjack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4C275521B83B3D700838B17 /* EthanolTools.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = EthanolTools.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4C384981B7E6DA300F2B30A /* EthanolUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = EthanolUtilities.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -251,10 +251,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3205E2A81B7DCC64000E14FA /* NSObject+ETHKeyboardHandlerObjectExtension.swift in Sources */,
 				655A9E351B81FAEB00C1AAB3 /* UIViewController+EthanolExtension.swift in Sources */,
 				65A34AE21B81E2E600034E8F /* UINavigationItem+EthanolExtension.swift in Sources */,
-				3205E2A51B7DCC1F000E14FA /* ETHKeyboardHandlerProtocol.swift in Sources */,
+				32C26FFB1B81DEBA00A154CF /* NSObject+KeyboardHandlerExtension.swift in Sources */,
+				32C26FFD1B81E24100A154CF /* UIScrollView+KeyboardHandlerExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
