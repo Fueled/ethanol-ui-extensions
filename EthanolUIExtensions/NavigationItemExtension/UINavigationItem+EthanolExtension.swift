@@ -16,13 +16,36 @@ let kNavigationBarHeight: CGFloat = 44.0
 
 extension UINavigationItem {
   
+  /**
+  *  Adds a custom back button.
+  *  @param title The custom back button title.
+  *  @param target The navigationItem's ViewController where custom back button is to be added.
+  *  @param selector The selector to be executed on tapping custom back button.
+  */
+  
   public func setCustomBackButtonWithTitle(title:String, target:UIViewController, selector: Selector) -> Void {
     self.setCustomBackButtonWithTitle(title, imageName: nil, target: target, selector: selector)
   }
   
+  
+  /**
+  *  Adds a custom back button.
+  *  @param imageName The custom back button image.
+  *  @param target The navigationItem's ViewController where custom back button is to be added.
+  *  @param selector The selector to be executed on tapping custom back button.
+  */
+  
   public func setCustomBackButtonWithImageName(imageName:String, target:UIViewController, selector: Selector) -> Void {
     self.setCustomBackButtonWithTitle(nil, imageName: imageName, target: target, selector: selector)
   }
+  
+  /**
+  *  Adds a custom back button. Either title or imageName should be passed to see the newly added custom back button.
+  *  @param title The custom back button title.
+  *  @param imageName The custom back button image.
+  *  @param target The navigationItem's ViewController where custom back button is to be added.
+  *  @param selector The selector to be executed on tapping custom back button.
+  */
   
   public func setCustomBackButtonWithTitle(title:String? , imageName:String?, target:UIViewController, selector: Selector) -> Void {
     self.hidesBackButton = true
@@ -51,6 +74,20 @@ extension UINavigationItem {
     self.leftBarButtonItem = UIBarButtonItem(customView: backButton)
   }
   
+  /**
+  *  Removes custom back button if any has been added.
+  */
+  public func removeCustomBackButton(){
+    if let _ = self.customBackButton() {
+      self.leftBarButtonItem = nil
+    }
+  }
+  
+  /**
+  *  Returns the title of a custom back button or nil if none has been added yet.
+  *  @return title An optional 'String' object representing title of custom back button.
+  */
+  
   public func customBackButtonTitle()-> String? {
     var title: String? = ""
     
@@ -60,6 +97,10 @@ extension UINavigationItem {
     
     return title
   }
+  /**
+  *  Returns the custom back button or nil if none has been added yet.
+  *  @return title An optional 'UIButton' object representing custom back button.
+  */
   
   public func customBackButton()-> UIButton? {
     var backButton: UIButton? = nil
@@ -71,6 +112,11 @@ extension UINavigationItem {
     }
     return backButton
   }
+  
+  /**
+  *  Sets a NSAttributedString as the title of NavigationItem.
+  *  @param attributedTitle the title of NavigationItem.
+  */
   
   public func setAttributedTitle(attributedTitle:NSAttributedString){
     var label = self.labelForAttributedTitle()
