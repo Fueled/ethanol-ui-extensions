@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import EthanolTools
 
 /** Helper block to convert UIViewAnimationCurve to UIViewAnimationOptions */
 
@@ -48,7 +47,7 @@ public extension NSObject {
     NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardDidHideNotification, object: nil)
     NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
     
-    ETHLogDebug("DERegistered Observers for keyboard Notification for object \(self) of class \(theClassName)")
+    print("ETHLogDebug: DERegistered Observers for keyboard Notification for object \(self) of class \(theClassName)")
   }
   
   public var eth_isKeyboardShown:Bool {
@@ -120,7 +119,7 @@ public extension NSObject {
     if let closure = self.notificationClosure {
       closure(isShowing:isShowing, startKeyboardRect:startKeyboardRect, endKeyboardRect:endKeyboardRect, duration:duration, options:options)
     } else {
-      ETHLogWarn("There is no closure supplied to handle responses for Keyboard Notifications to object \(self)")
+      print("ETHLogWarn: There is no closure supplied to handle responses for Keyboard Notifications to object \(self)")
     }
   }
   

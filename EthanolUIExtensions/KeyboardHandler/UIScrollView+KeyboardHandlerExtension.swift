@@ -76,7 +76,7 @@ public extension UIScrollView {
   private func handleRecievedKeyboardNotification(isShowing:Bool, startKeyboardRect:CGRect, endKeyboardRect:CGRect, duration:NSTimeInterval, options:UIViewAnimationOptions) {
     
     let currentShowState = isShowing ? "show" : "hide"
-    ETHLogTrace("\(self) :Calling defaultKeyboardNotificationBlock: \(currentShowState), \(startKeyboardRect), \(endKeyboardRect), \(duration), \(options)")
+    print("ETHLogTrace: \(self) :Calling defaultKeyboardNotificationBlock: \(currentShowState), \(startKeyboardRect), \(endKeyboardRect), \(duration), \(options)")
     
     let keyboardOffset:CGFloat = keyboardScrollOffset
     if isShowing {
@@ -97,12 +97,12 @@ public extension UIScrollView {
       
       if absoluteHeight >= (screenBounds.size.height - endKeyboardRect.size.height) {
         var offset = fmax(0.0, screenBounds.size.height-absoluteHeight)
-        ETHLogVerbose("\(self) : KeyboardNotificationBlock Show : Base offset is \(offset), keyboard offset is \(keyboardOffset)")
+        print("ETHLogVerbose: \(self) : KeyboardNotificationBlock Show : Base offset is \(offset), keyboard offset is \(keyboardOffset)")
         offset -= keyboardOffset
         offset = endKeyboardRect.size.height - offset
         
-        ETHLogDebug("\(self) : Keyboard notification block (show): calculated offset is \(offset) (Initial bottom offset: \(bottomInset))")
-        ETHLogVerbose("\(self) : Keyboard notification block (show): initial indicator offset is \(indicatorBottomInset)")
+        print("ETHLogDebug: \(self) : Keyboard notification block (show): calculated offset is \(offset) (Initial bottom offset: \(bottomInset))")
+        print("ETHLogVerbose: \(self) : Keyboard notification block (show): initial indicator offset is \(indicatorBottomInset)")
         
         UIView.animateWithDuration(duration, delay: 0.0, options: options, animations: { () -> Void in
           var edgeInsets = self.contentInset
@@ -119,8 +119,8 @@ public extension UIScrollView {
       let bottomInset:CGFloat = self.scrollViewBottomInset ?? 0.0
       let indicatorBottomInset:CGFloat = self.scrollViewIndicatorBottomInset ?? 0.0
       
-      ETHLogDebug("\(self) : Keyboard notification block (hide): initial offset is \(bottomInset)")
-      ETHLogVerbose("\(self) : Keyboard notification block (hide): initial indicator offset is \(indicatorBottomInset)")
+      print("ETHLogDebug: \(self) : Keyboard notification block (hide): initial offset is \(bottomInset)")
+      print("ETHLogVerbose: \(self) : Keyboard notification block (hide): initial indicator offset is \(indicatorBottomInset)")
       UIView.animateWithDuration(duration, delay: 0.0, options: options, animations: { () -> Void in
         var edgeInsets = self.contentInset
         edgeInsets.bottom = bottomInset
