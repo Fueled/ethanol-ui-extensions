@@ -14,8 +14,12 @@ extension UIViewController {
   *  Returns the Top ViewController of app or nil if none has been added yet.
   *  @return UIViewController An optional 'UIViewController' object representing Top ViewController of app.
   */
-
- public class func topMostController() -> UIViewController? {
+  
+  public  class var topMostController: UIViewController?{
+    return  UIViewController.topMostViewController()
+  }
+  
+  private class func topMostViewController() -> UIViewController? {
     var topController : UIViewController? = nil
   
   guard let window = UIApplication.sharedApplication().keyWindow else {
