@@ -14,6 +14,7 @@
 		3205E2A81B7DCC64000E14FA /* NSObject+ETHKeyboardHandlerObjectExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3205E2A71B7DCC64000E14FA /* NSObject+ETHKeyboardHandlerObjectExtension.swift */; };
 		655A9E351B81FAEB00C1AAB3 /* UIViewController+EthanolExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655A9E341B81FAEB00C1AAB3 /* UIViewController+EthanolExtension.swift */; };
 		65A34AE21B81E2E600034E8F /* UINavigationItem+EthanolExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A34AE11B81E2E600034E8F /* UINavigationItem+EthanolExtension.swift */; };
+		655AB0111B83459C0076311E /* UINavigationController+EthanolExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655AB0101B83459C0076311E /* UINavigationController+EthanolExtension.swift */; };
 		F4C3849B1B7E6DB200F2B30A /* EthanolUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4C384981B7E6DA300F2B30A /* EthanolUtilities.framework */; };
 /* End PBXBuildFile section */
 
@@ -39,6 +40,7 @@
 		F4C384981B7E6DA300F2B30A /* EthanolUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = EthanolUtilities.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		655A9E341B81FAEB00C1AAB3 /* UIViewController+EthanolExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+EthanolExtension.swift"; sourceTree = "<group>"; };
 		65A34AE11B81E2E600034E8F /* UINavigationItem+EthanolExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UINavigationItem+EthanolExtension.swift"; path = "NavigationItemExtension/UINavigationItem+EthanolExtension.swift"; sourceTree = "<group>"; };
+		655AB0101B83459C0076311E /* UINavigationController+EthanolExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+EthanolExtension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +88,7 @@
 				65A34AD21B81D78A00034E8F /* NavigationItemExtension */,
 				3205E28D1B7DCBBB000E14FA /* EthanolUIExtensions.h */,
 				655A9E331B81FAEB00C1AAB3 /* UIViewControllerExtension */,
+				655AB00F1B83459C0076311E /* UINavigationTransitionHelper */,
 				3205E2A61B7DCC3F000E14FA /* Keyboard Handlers */,
 				3205E28F1B7DCBBB000E14FA /* Info.plist */,
 			);
@@ -124,6 +127,14 @@
 				65A34AE11B81E2E600034E8F /* UINavigationItem+EthanolExtension.swift */,
 			);
 			name = NavigationItemExtension;
+				sourceTree = "<group>";
+			};
+		655AB00F1B83459C0076311E /* UINavigationTransitionHelper */ = {
+			isa = PBXGroup;
+			children = (
+				655AB0101B83459C0076311E /* UINavigationController+EthanolExtension.swift */,
+			);
+			path = UINavigationTransitionHelper;
 			sourceTree = "<group>";
 		};
 		F4C3849A1B7E6DA700F2B30A /* Dependencies */ = {
@@ -246,6 +257,7 @@
 				3205E2A81B7DCC64000E14FA /* NSObject+ETHKeyboardHandlerObjectExtension.swift in Sources */,
 				655A9E351B81FAEB00C1AAB3 /* UIViewController+EthanolExtension.swift in Sources */,
 				65A34AE21B81E2E600034E8F /* UINavigationItem+EthanolExtension.swift in Sources */,
+				655AB0111B83459C0076311E /* UINavigationController+EthanolExtension.swift in Sources */,
 				3205E2A51B7DCC1F000E14FA /* ETHKeyboardHandlerProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
