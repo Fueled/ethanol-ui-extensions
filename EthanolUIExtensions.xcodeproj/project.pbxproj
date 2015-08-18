@@ -34,7 +34,7 @@
 		3205E29B1B7DCBBB000E14FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3205E2A41B7DCC1F000E14FA /* ETHKeyboardHandlerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ETHKeyboardHandlerProtocol.swift; sourceTree = "<group>"; };
 		3205E2A71B7DCC64000E14FA /* NSObject+ETHKeyboardHandlerObjectExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSObject+ETHKeyboardHandlerObjectExtension.swift"; sourceTree = "<group>"; };
-		F4C384981B7E6DA300F2B30A /* EthanolUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EthanolUtilities.framework; path = Carthage/Build/iOS/EthanolUtilities.framework; sourceTree = SOURCE_ROOT; };
+		F4C384981B7E6DA300F2B30A /* EthanolUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = EthanolUtilities.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -342,10 +342,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				INFOPLIST_FILE = EthanolUIExtensions/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -364,10 +360,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				INFOPLIST_FILE = EthanolUIExtensions/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
