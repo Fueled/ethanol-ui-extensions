@@ -10,9 +10,10 @@
 import Foundation
 
 let kAttributedTitleLabelTag = 325
-
 let kBackButtonWidth: CGFloat = 75.0
-let kNavigationBarHeight: CGFloat = 44.0
+
+private var customBackButtonKey: UInt8 = 1
+private var attributedTitleKey: UInt8 = 2
 
 extension UINavigationItem {
   
@@ -23,42 +24,42 @@ extension UINavigationItem {
   *  @param selector The selector to be executed on tapping custom back button.
   */
   
-  public func setCustomBackButtonWithTitle(title:String, target:UIViewController, selector: Selector) -> Void {
-    self.setCustomBackButtonWithTitle(title, imageName: nil, target: target, selector: selector)
+  public func setCustomBackButtonWithTitle(title: String, target: UIViewController, selector: Selector) -> Void {
+    self.setCustomBackButtonWithTitle(title, image: nil, target: target, selector: selector)
   }
   
   
   /**
   *  Adds a custom back button.
-  *  @param imageName The custom back button image.
+  *  @param image The custom back button image.
   *  @param target The navigationItem's ViewController where custom back button is to be added.
   *  @param selector The selector to be executed on tapping custom back button.
   */
   
-  public func setCustomBackButtonWithImageName(imageName:String, target:UIViewController, selector: Selector) -> Void {
-    self.setCustomBackButtonWithTitle(nil, imageName: imageName, target: target, selector: selector)
+  public func setCustomBackButtonWithImageName(image: UIImage, target: UIViewController, selector: Selector) -> Void {
+    self.setCustomBackButtonWithTitle(nil, image: image, target: target, selector: selector)
   }
   
   /**
   *  Adds a custom back button. Either title or imageName should be passed to see the newly added custom back button.
   *  @param title The custom back button title.
-  *  @param imageName The custom back button image.
+  *  @param image The custom back button image.
   *  @param target The navigationItem's ViewController where custom back button is to be added.
   *  @param selector The selector to be executed on tapping custom back button.
   */
   
-  public func setCustomBackButtonWithTitle(title:String? , imageName:String?, target:UIViewController, selector: Selector) -> Void {
+  public func setCustomBackButtonWithTitle(title: String? , image: UIImage?, target: UIViewController, selector: Selector) -> Void {
     self.hidesBackButton = true
     let backButton = UIButton(type: UIButtonType.Custom)
     backButton.exclusiveTouch = true
-    
-    let frame = CGRectMake(0.0, 0.0, kBackButtonWidth, kNavigationBarHeight)
+
+    let navBarHeight = target.navigationController!.navigationBar.frame.size.height
+    let frame = CGRectMake(0.0, 0.0, kBackButtonWidth, navBarHeight)
     backButton.frame = frame
     
     var imageWidth: CGFloat = 0.0
-    if let imageName = imageName {
-      let image = UIImage(named: imageName)
-      imageWidth = (image?.size.width)!
+    if let image = image {
+      imageWidth = image.size.width
       backButton.setImage(image, forState: UIControlState.Normal)
     }
     
@@ -72,14 +73,16 @@ extension UINavigationItem {
     backButton.imageEdgeInsets = edgeInsets
     
     self.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+    self.customBackButton = backButton
   }
   
   /**
   *  Removes custom back button if any has been added.
   */
   public func removeCustomBackButton(){
-    if let _ = self.customBackButton() {
+    if let _ = self.customBackButton {
       self.leftBarButtonItem = nil
+      self.customBackButton = nil
     }
   }
   
@@ -88,60 +91,60 @@ extension UINavigationItem {
   *  @return title An optional 'String' object representing title of custom back button.
   */
   
-  public func customBackButtonTitle()-> String? {
-    var title: String? = ""
-    
-    if let backButton = self.customBackButton(){
-      title = backButton.titleForState(UIControlState.Normal)
-    }
-    
-    return title
+  public func customBackButtonTitle() -> String? {
+    return self.customBackButton?.titleForState(UIControlState.Normal)
   }
-  /**
-  *  Returns the custom back button or nil if none has been added yet.
-  *  @return title An optional 'UIButton' object representing custom back button.
-  */
   
-  public func customBackButton()-> UIButton? {
-    var backButton: UIButton? = nil
+  /**
+  
+  *  UIButton to be used as the custom back button of NavigationItem.
 
-    if let customView = self.leftBarButtonItem?.customView {
-      if customView.isKindOfClass(UIButton) {
-         backButton = customView as? UIButton
-      }
+  *  Returns the custom back button or nil if none has been added yet.
+  *  customBackButton An optional 'UIButton' object representing custom back button.
+  */
+  
+  private (set)  public var customBackButton: UIButton? {
+    get {
+      return objc_getAssociatedObject(self, &customBackButtonKey) as? UIButton
     }
-    return backButton
+    set(backButton){
+      objc_setAssociatedObject(self, &customBackButtonKey, backButton, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    }
   }
   
   /**
-  *  Sets a NSAttributedString as the title of NavigationItem.
-  *  @param attributedTitle the title of NavigationItem.
+  *  NSAttributedString to be used as the title of NavigationItem.
   */
   
-  public func setAttributedTitle(attributedTitle:NSAttributedString){
-    var label = self.labelForAttributedTitle()
-    
-    if label == nil {
+  public var attributedTitle: NSAttributedString? {
+    get {
+      return  self.labelForAttributedTitle()?.attributedText
+    }
+    set(attributedTitle){
+      self.setAttributedTitle(attributedTitle)
+    }
+  }
+  
+  private func setAttributedTitle(attributedTitle:NSAttributedString?){
+    let label: UILabel
+    if let currentLabel = self.labelForAttributedTitle() {
+      label = currentLabel
+    } else {
       label = UILabel()
-      label!.tag = kAttributedTitleLabelTag
+      label.tag = kAttributedTitleLabelTag
       self.titleView = label
     }
     
-    label?.attributedText = attributedTitle
-    label?.textAlignment = NSTextAlignment.Center
-    label?.sizeToFit()
+    label.attributedText = attributedTitle
+    label.textAlignment = NSTextAlignment.Center
+    label.sizeToFit()
   }
   
-  func labelForAttributedTitle() -> UILabel? {
+
+  private func labelForAttributedTitle() -> UILabel? {
     var label : UILabel? = nil
-    
-    if let titleView = self.titleView {
-      if titleView.isKindOfClass(UILabel) {
-          label = titleView as? UILabel
-        if label?.tag != kAttributedTitleLabelTag {
-          label = nil
-        }
-      }
+    if let currentLabel = self.titleView as? UILabel where currentLabel.tag == kAttributedTitleLabelTag {
+      label = currentLabel
     }
     return label
   }
