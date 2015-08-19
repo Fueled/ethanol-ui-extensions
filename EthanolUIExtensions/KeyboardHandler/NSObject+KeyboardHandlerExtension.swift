@@ -39,7 +39,7 @@ public typealias KeyboardNotificationBlock = (isShowing: Bool, notificationState
 
 public extension NSObject {
   /* Public Method to add Observers for Keyboard Hide/Show Notifications */
-  public func eth_RegisterForKeyboardNotificationsWithHandler(handler: KeyboardNotificationBlock) {
+  public func eth_registerForKeyboardNotificationsWithHandler(handler:KeyboardNotificationBlock) {
     self.notificationClosure = handler
     registerForKeyboardNotifications()
   }
@@ -49,7 +49,7 @@ public extension NSObject {
   }
   
   /* Remove Observing from keyboard notifications */
-  public func eth_DeRegisterForKeyboardNotifications() {
+  public func eth_deRegisterForKeyboardNotifications() {
     self.isObservingNotifications = false
     self.notificationClosure = nil
     NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
@@ -60,7 +60,7 @@ public extension NSObject {
   }
   
   /* Keyboard State */
-  private(set) public var eth_isKeyboardShown: Bool {
+  private (set) public var eth_isKeyboardShown: Bool {
     get {
       return objc_getAssociatedObject(self, &isKeyboardShownKey).boolValue
     }

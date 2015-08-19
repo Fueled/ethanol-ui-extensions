@@ -22,11 +22,11 @@ public extension UIScrollView {
   }
   
   public func eth_handleKeyboardNotifications () {
-    self.eth_RegisterForKeyboardNotificationsWithHandler(eth_defaultKeyboardNotificationBlock())
+    self.eth_registerForKeyboardNotificationsWithHandler(eth_defaultKeyboardNotificationBlock())
   }
   
   public func eth_stopHandlingKeyboardNotifications() {
-    self.eth_DeRegisterForKeyboardNotifications()
+    self.eth_deRegisterForKeyboardNotifications()
   }
   
   public func eth_defaultKeyboardNotificationBlock() -> KeyboardNotificationBlock {
