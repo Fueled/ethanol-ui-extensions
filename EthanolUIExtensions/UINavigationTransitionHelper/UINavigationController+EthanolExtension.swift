@@ -14,7 +14,7 @@ private class TransitionOptionsContainer {
   var options:UIViewAnimationOptions = UIViewAnimationOptions.TransitionNone
 }
 
-let TransitionDurationOption = { (options:UIViewAnimationOptions) -> NSTimeInterval in
+private let TransitionDurationOption = { (options:UIViewAnimationOptions) -> NSTimeInterval in
   var timeInterval = 0.0
   switch(options) {
   case UIViewAnimationOptions.TransitionCurlUp, UIViewAnimationOptions.TransitionCurlDown:
@@ -27,7 +27,7 @@ let TransitionDurationOption = { (options:UIViewAnimationOptions) -> NSTimeInter
   return timeInterval
 }
 
-let ReverseAnimationForAnimation = { (animation:UIViewAnimationOptions) -> UIViewAnimationOptions in
+private let ReverseAnimationForAnimation = { (animation:UIViewAnimationOptions) -> UIViewAnimationOptions in
   switch(animation) {
   case UIViewAnimationOptions.TransitionCurlUp:
     return UIViewAnimationOptions.TransitionCurlDown;
@@ -65,10 +65,12 @@ public struct  ETHAnimatedTransitionNewRootOptions : OptionSetType {
 }
 
 public extension UIViewController {
+  
   public func eth_backButtonTapped(){
     self.navigationController!.eth_popViewControllerWithMatchingAnimationAnimated(true) { (Bool finished) -> Void in
     }
   }
+  
 }
 
 public extension UINavigationController {
@@ -80,7 +82,6 @@ public extension UINavigationController {
   *  @param transitionOption  The transition animation to use. It must start with UIViewAnimationOptionTransition.
   *  @param completionHandler A block called when the transition animation has completed.
   */
-  
   public func eth_animatedTransitionToViewController(viewController: UIViewController, transitionOption: UIViewAnimationOptions, completionHandler: (Bool -> Void)) {
     
     UIView.transitionWithView(self.view, duration: TransitionDurationOption(transitionOption), options: transitionOption, animations: { () -> Void in
@@ -100,14 +101,49 @@ public extension UINavigationController {
     viewController.navigationItem.setCustomBackButtonWithTitle(title, target: viewController, selector: "eth_backButtonTapped")
   }
   
+  
+  /**
+  *  Perform a transition to a new view controller instantly, discarding the current navigation stack.
+  *  The used navigation controller is the one injected from the ETHFramework injector,
+  *  which defaults to UINavigationController.
+  *
+  *  @param viewController    The view controller to perform the transition to.
+  *  @param completionHandler A block called when the transition animation has completed.
+  *
+  *  @return The newly created navigation controller.
+  */
   public func eth_transitionToNewRootViewController(viewController: UIViewController, completion: (Bool -> Void)) -> UINavigationController? {
     return self.eth_transitionToNewRootViewController(viewController, transitionOption:UIViewAnimationOptions.TransitionNone, completion:completion)
   }
   
+  
+  /**
+  *  Perform a transition to a new view controller, discarding the current navigation stack, and allowing to specify the animation type.
+  *  The used navigation controller type is the type of the navigation controller used to call the method.
+  *
+  *  @param viewController    The view controller to perform the transition to.
+  *  @param transitionOption  The transition animation to use. It must start with UIViewAnimationOptionTransition.
+  *  @param completionHandler A block called when the transition animation has completed.
+  *
+  *  @return The newly created navigation controller.
+  */
   public func eth_transitionToNewRootViewController(viewController: UIViewController, transitionOption: UIViewAnimationOptions, completion:(Bool -> Void)) -> UINavigationController? {
       return self.eth_transitionToNewRootViewController(viewController, options: ETHAnimatedTransitionNewRootOptions.NavigationController, transitionOption: transitionOption, completionHandler: completion) as? UINavigationController
   }
   
+  
+  
+  /**
+  *  Perform a transition to a new view controller, discarding the current navigation stack, and allowing to specify the animation type.
+  *  The used navigation controller type is the type of the navigation controller used to call the method.
+  *
+  *  @param viewController    The view controller to perform the transition to.
+  *  @param options           The options which defines the behavior when assigning the new root view controller.
+  *  @param transitionOption  The transition animation to use. It must start with UIViewAnimationOptionTransition.
+  *  @param completionHandler A block called when the transition animation has completed.
+  *
+  *  @return The newly created navigation controller.
+  */
   public func eth_transitionToNewRootViewController(viewController: UIViewController, options: ETHAnimatedTransitionNewRootOptions, transitionOption: UIViewAnimationOptions, completionHandler: (Bool -> Void)) -> UIViewController?  {
     
     let window = self.view.window ?? UIApplication.sharedApplication().windows.first!
@@ -138,7 +174,14 @@ public extension UINavigationController {
     return resultViewController
   }
   
-  
+  /**
+  *  Pop the current view controller with the specifed animation.
+  *
+  *  @param transitionOption  The animation to use. It must start with UIViewAnimationOptionTransition.
+  *  @param completionHandler A block called when the transition animation has completed.
+  *
+  *  @return The popped view controller.
+  */
   public func eth_popViewControllerWithTransitionOption(transitionOption: UIViewAnimationOptions, completionHandler: (Bool -> Void)) -> UIViewController? {
     
     let viewController = self.viewControllers.last
@@ -152,7 +195,15 @@ public extension UINavigationController {
     return viewController
   }
   
-  
+  /**
+  *  Pop the current view controller, with an animation matching which was used to push the view controller.
+  *  If such an animation is not found, its behavior is equivalent to popViewControllerAnimated:.
+  *
+  *  @param animated          Specify whether or not the pop should be animated.
+  *  @param completionHandler A block called when the transition animation has completed.
+  *
+  *  @return The popped view controller.
+  */
   public func eth_popViewControllerWithMatchingAnimationAnimated(animated: Bool, completionHandler: (Bool -> Void)) -> UIViewController? {
     if(self.viewControllers.count == 0) {
       return nil
@@ -174,7 +225,10 @@ public extension UINavigationController {
     return viewController
   }
   
-  
+  /**
+  *  Retrieve the currently displayed back button title (if any).
+  *  @return The current back button title, or nil if there is no back button.
+  */
   public func eth_currentBackButtonTitle() -> String? {
     if(self.viewControllers.count < 2) {
       return nil;
