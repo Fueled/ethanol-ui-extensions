@@ -15,42 +15,45 @@ extension UIViewController {
   *  @return UIViewController An optional 'UIViewController' object representing Top ViewController of app.
   */
   
-  public  class var topMostController: UIViewController?{
-    return  UIViewController.topMostViewController()
-  }
-  
-  private class func topMostViewController() -> UIViewController? {
-    var topController : UIViewController? = nil
-  
-  guard let window = UIApplication.sharedApplication().keyWindow else {
-    return nil
-  }
-  
-  topController = window.rootViewController
-  
-  repeat {
-    if let newTopController = topController {
-      if newTopController.isKindOfClass(UINavigationController) {
-        let topNavigationViewController =  newTopController as! UINavigationController
-        if topNavigationViewController.visibleViewController != nil {
-          topController = topNavigationViewController.visibleViewController!
-        } else {
-          topController = newTopController.presentedViewController!
-        }
-      } else if newTopController.isKindOfClass(UITabBarController) {
-        let topTabBarViewController = newTopController as! UITabBarController
-        if topTabBarViewController.selectedViewController != nil {
-          topController = topTabBarViewController.selectedViewController!
-        } else {
-          topController = newTopController.presentedViewController!
-        }
-      } else {
-        topController = newTopController.presentedViewController!
-      }
+  public static var topMostController: UIViewController? {
+    var topController: UIViewController? = nil
+    
+    guard let window = UIApplication.sharedApplication().keyWindow else {
+      return nil
     }
-  } while (topController?.presentedViewController != nil)
-
-  return topController
+    
+    topController = window.rootViewController
+    
+    repeat {
+      if let newTopController = topController {
+        if let topNavigationViewController =  newTopController as? UINavigationController {
+          if let visibleViewController = topNavigationViewController.visibleViewController {
+            topController = visibleViewController
+          } else {
+            if let presentedController = newTopController.presentedViewController {
+              topController = presentedController
+            }
+          }
+        } else if let topTabBarViewController = newTopController as? UITabBarController {
+          if let selectedController = topTabBarViewController.selectedViewController {
+            topController = selectedController
+          } else {
+            if let presentedController = newTopController.presentedViewController {
+              topController = presentedController
+            }
+          }
+        } else {
+          if let presentedController = newTopController.presentedViewController {
+            topController = presentedController
+          }
+        }
+      }
+    } while (topController?.presentedViewController != nil)
+    
+    return topController
+  }
+  
+  final public var isTopMostController: Bool {
+    return (self === UIViewController.topMostController)
   }
 }
-
