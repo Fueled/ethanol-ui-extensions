@@ -77,6 +77,11 @@ public extension UIScrollView {
   }
   
   private func handleRecievedKeyboardNotification(isShowing: Bool, notificationState: KeyboardNotificationState, startKeyboardRect: CGRect, endKeyboardRect: CGRect, duration: NSTimeInterval, options:UIViewAnimationOptions) {
+
+    guard let window = self.window else {
+      ETHLogFatal("Notification Handler Called on a scrollview without a window!")
+      return
+    }
     
     let currentShowState = isShowing ? "show" : "hide"
     
@@ -85,6 +90,7 @@ public extension UIScrollView {
     if notificationState == .DidShow || notificationState == .DidHide { // Dont handle didshow/didhide states for a scrollview by default.
       return
     }
+    
     
     let keyboardOffset:CGFloat = keyboardScrollOffset
     if isShowing {
@@ -100,8 +106,8 @@ public extension UIScrollView {
       }
       
       let screenBounds = UIScreen.mainScreen().bounds
-      let positionInWindow = self.window?.convertPoint(self.frame.origin, fromView: self.superview)
-      let absoluteHeight = positionInWindow!.y + self.frame.size.height + self.contentOffset.y
+      let positionInWindow = window.convertPoint(self.frame.origin, fromView: self.superview)
+      let absoluteHeight = positionInWindow.y + self.frame.size.height + self.contentOffset.y
       
       if absoluteHeight >= (screenBounds.size.height - endKeyboardRect.size.height) {
         var offset = max(0.0, screenBounds.size.height-absoluteHeight)

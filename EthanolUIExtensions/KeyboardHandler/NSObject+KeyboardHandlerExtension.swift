@@ -45,7 +45,7 @@ public extension NSObject {
   }
   
   var ClassName: String {
-    return NSStringFromClass(self.dynamicType).componentsSeparatedByString(".").last!
+    return NSStringFromClass(self.dynamicType).componentsSeparatedByString(".").last ?? ">NSObject<"
   }
   
   /* Remove Observing from keyboard notifications */
@@ -201,10 +201,11 @@ public extension NSObject {
       return wrapper?.notificationClosure
     }
     set (closure) {
-      if closure != nil {
+      if let closure = closure {
         let wrapperClass = KeyboardNotificationHandlerWrapper()
         wrapperClass.notificationClosure = closure
-        objc_setAssociatedObject(self, &keyboardNotificationHandlerClosureKey, wrapperClass, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN) // This is retain and not copy because we now store the closure encapsulated within a class since we cannot store it directly.
+        objc_setAssociatedObject(self, &keyboardNotificationHandlerClosureKey, wrapperClass, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+        // This is retain and not copy because we now store the closure encapsulated within a class since we cannot store it directly.
       } else {
         objc_setAssociatedObject(self, &keyboardNotificationHandlerClosureKey, nil, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
       }
