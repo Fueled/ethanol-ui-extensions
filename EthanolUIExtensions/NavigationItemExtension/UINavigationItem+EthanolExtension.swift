@@ -9,8 +9,9 @@
 
 import Foundation
 
-let kAttributedTitleLabelTag = 325
-let kBackButtonWidth: CGFloat = 75.0
+private let kAttributedTitleLabelTag = 325
+private let kBackButtonWidth: CGFloat = 75.0
+private let kBackButtonHeight: CGFloat = 32.0
 
 private var customBackButtonKey: UInt8 = 1
 private var attributedTitleKey: UInt8 = 2
@@ -24,7 +25,7 @@ extension UINavigationItem {
   *  @param selector The selector to be executed on tapping custom back button.
   */
   
-  public func setCustomBackButtonWithTitle(title: String, target: UIViewController, selector: Selector) -> Void {
+  public func setCustomBackButtonWithTitle(title: String, target: AnyObject, selector: Selector) -> Void {
     self.setCustomBackButtonWithTitle(title, image: nil, target: target, selector: selector)
   }
   
@@ -36,7 +37,7 @@ extension UINavigationItem {
   *  @param selector The selector to be executed on tapping custom back button.
   */
   
-  public func setCustomBackButtonWithImageName(image: UIImage, target: UIViewController, selector: Selector) -> Void {
+  public func setCustomBackButtonWithImageName(image: UIImage, target: AnyObject, selector: Selector) -> Void {
     self.setCustomBackButtonWithTitle(nil, image: image, target: target, selector: selector)
   }
   
@@ -48,13 +49,11 @@ extension UINavigationItem {
   *  @param selector The selector to be executed on tapping custom back button.
   */
   
-  public func setCustomBackButtonWithTitle(title: String? , image: UIImage?, target: UIViewController, selector: Selector) -> Void {
+  public func setCustomBackButtonWithTitle(title: String? , image: UIImage?, target: AnyObject, selector: Selector) -> Void {
     self.hidesBackButton = true
     let backButton = UIButton(type: UIButtonType.Custom)
     backButton.exclusiveTouch = true
-
-    let navBarHeight = target.navigationController!.navigationBar.frame.size.height
-    let frame = CGRectMake(0.0, 0.0, kBackButtonWidth, navBarHeight)
+    let frame = CGRectMake(0.0, 0.0, kBackButtonWidth, kBackButtonHeight)
     backButton.frame = frame
     
     var imageWidth: CGFloat = 0.0
@@ -91,8 +90,10 @@ extension UINavigationItem {
   *  @return title An optional 'String' object representing title of custom back button.
   */
   
-  public func customBackButtonTitle() -> String? {
-    return self.customBackButton?.titleForState(UIControlState.Normal)
+   public var customBackButtonTitle: String? {
+    get {
+      return self.customBackButton?.titleForState(UIControlState.Normal)
+    }
   }
   
   /**
@@ -121,26 +122,21 @@ extension UINavigationItem {
       return  self.labelForAttributedTitle()?.attributedText
     }
     set(attributedTitle){
-      self.setAttributedTitle(attributedTitle)
+      let label: UILabel
+      if let currentLabel = self.labelForAttributedTitle() {
+        label = currentLabel
+      } else {
+        label = UILabel()
+        label.tag = kAttributedTitleLabelTag
+        self.titleView = label
+      }
+      
+      label.attributedText = attributedTitle
+      label.textAlignment = NSTextAlignment.Center
+      label.sizeToFit()
     }
   }
   
-  private func setAttributedTitle(attributedTitle:NSAttributedString?){
-    let label: UILabel
-    if let currentLabel = self.labelForAttributedTitle() {
-      label = currentLabel
-    } else {
-      label = UILabel()
-      label.tag = kAttributedTitleLabelTag
-      self.titleView = label
-    }
-    
-    label.attributedText = attributedTitle
-    label.textAlignment = NSTextAlignment.Center
-    label.sizeToFit()
-  }
-  
-
   private func labelForAttributedTitle() -> UILabel? {
     var label : UILabel? = nil
     if let currentLabel = self.titleView as? UILabel where currentLabel.tag == kAttributedTitleLabelTag {
