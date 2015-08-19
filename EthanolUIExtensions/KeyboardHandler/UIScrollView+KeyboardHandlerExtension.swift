@@ -10,29 +10,47 @@ import Foundation
 import ObjectiveC
 import EthanolTools
 
-/** ETHKeyboardHandlerScrollviewExtension Extends UIScrollView
-
+/** 
+  UIScrollView Extension to handle keyboard notifications internally by
+  manipulating the content inset of the scrollview
 */
 
 public extension UIScrollView {
   
+  /**
+  *  Add observers for keyboard appearance and keyboard disappearance with the default notification block.
+  *  The default block handles everything for you in term of keyboard management when a UITextField is selected.
+  *  This method also adds a inset to the keyboard notifications
+  */
   public func eth_handleKeyboardNotificationsWithOffset(offset: CGFloat) {
-    self.setKeyboardOffset(offset)
+    self.keyboardScrollOffset = offset
     self.eth_handleKeyboardNotifications()
   }
   
+  /**
+  * Add observers for keyboard appearance and keyboard disappearance with the default notification block.
+  * The default block handles everything for you in term of keyboard management when a UITextField is selected.
+  */
   public func eth_handleKeyboardNotifications () {
     self.eth_registerForKeyboardNotificationsWithHandler(eth_defaultKeyboardNotificationBlock())
   }
   
+  /**
+    Remove observers for keyboard appearance and keyboard disappearance with the default notification block.
+  */
   public func eth_stopHandlingKeyboardNotifications() {
     self.eth_deRegisterForKeyboardNotifications()
   }
   
+  /**
+  *  Get the default block implementation used with -handleKeyboardNotfications.
+  *
+  *  @return The default block. Is never nil.
+  */
   public func eth_defaultKeyboardNotificationBlock() -> KeyboardNotificationBlock {
     return { [weak self](isShowing, notificationState, startKeyboardRect, endKeyboardRect, duration, options) -> Void in
       if let this = self {
-        this.handleRecievedKeyboardNotification(isShowing, notificationState: notificationState, startKeyboardRect: startKeyboardRect, endKeyboardRect: endKeyboardRect, duration: duration, options: options)
+        this.handleReceivedKeyboardNotification(isShowing, notificationState: notificationState, startKeyboardRect: startKeyboardRect, endKeyboardRect: endKeyboardRect, duration: duration, options: options)
       }
     }
   }
@@ -54,10 +72,6 @@ public extension UIScrollView {
     }
   }
   
-  internal func setKeyboardOffset(value: CGFloat) {
-    self.keyboardScrollOffset = value
-  }
-  
   private var scrollViewBottomInset: CGFloat? {
     get {
       return objc_getAssociatedObject(self, &scrollViewBottomInsetKey) as? CGFloat
@@ -76,7 +90,11 @@ public extension UIScrollView {
     }
   }
   
-  private func handleRecievedKeyboardNotification(isShowing: Bool, notificationState: KeyboardNotificationState, startKeyboardRect: CGRect, endKeyboardRect: CGRect, duration: NSTimeInterval, options:UIViewAnimationOptions) {
+  /** 
+    Private function called within the default block to handle keyboard notifications 
+    Internally updates scrollview insets
+  */
+  private func handleReceivedKeyboardNotification(isShowing: Bool, notificationState: KeyboardNotificationState, startKeyboardRect: CGRect, endKeyboardRect: CGRect, duration: NSTimeInterval, options:UIViewAnimationOptions) {
 
     guard let window = self.window else {
       ETHLogFatal("Notification Handler Called on a scrollview without a window!")
@@ -87,7 +105,8 @@ public extension UIScrollView {
     
     ETHLogTrace("\(self) :Calling defaultKeyboardNotificationBlock: \(currentShowState), \(startKeyboardRect), \(endKeyboardRect), \(duration), \(options)")
     
-    if notificationState == .DidShow || notificationState == .DidHide { // Dont handle didshow/didhide states for a scrollview by default.
+    // Dont handle didshow/didhide states for a scrollview by default.
+    if notificationState == .DidShow || notificationState == .DidHide {
       return
     }
     
