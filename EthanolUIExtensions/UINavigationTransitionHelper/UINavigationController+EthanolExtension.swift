@@ -64,6 +64,13 @@ public struct  ETHAnimatedTransitionNewRootOptions : OptionSetType {
   static let NavigationController = ETHAnimatedTransitionNewRootOptions(rawValue: 1)
 }
 
+public extension UIViewController {
+  public func eth_backButtonTapped(){
+    self.navigationController!.eth_popViewControllerWithMatchingAnimationAnimated(true) { (Bool finished) -> Void in
+    }
+  }
+}
+
 public extension UINavigationController {
   
   /**
@@ -90,23 +97,8 @@ public extension UINavigationController {
     if let eth_currentBackButtonTitle = self.eth_currentBackButtonTitle() {
       title = eth_currentBackButtonTitle
     }
-    viewController.navigationItem.setCustomBackButtonWithTitle(title, target: self, selector: "backButtonTapped")
-    
-    
-//    [viewController.navigationItem eth_setCustomBackButtonActionBlock:^(UIButton *backButton, CustomBackButtonActionCompletedBlock completedBlock) {
-//      [self eth_popViewControllerWithMatchingAnimationAnimated:YES completion:^(BOOL finished) {
-//      completedBlock(YES);
-//      }];
-//      }                                                       // Since the new view controller is already pushed, this returns the correct back button title
-//      title:[self eth_currentBackButtonTitle]];
+    viewController.navigationItem.setCustomBackButtonWithTitle(title, target: viewController, selector: "eth_backButtonTapped")
   }
-  
-  private func backButtonTapped(){
-    self.eth_popViewControllerWithMatchingAnimationAnimated(true) { (Bool finished) -> Void in
-      
-    }
-  }
-  
   
   public func eth_transitionToNewRootViewController(viewController: UIViewController, completion: (Bool -> Void)) -> UINavigationController? {
     return self.eth_transitionToNewRootViewController(viewController, transitionOption:UIViewAnimationOptions.TransitionNone, completion:completion)
