@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import EthanolTools
 
 private var TransitionOptionKey:UInt8 = 0
 
@@ -49,7 +50,7 @@ private let ReverseAnimationForAnimation = { (animation:UIViewAnimationOptions) 
 public struct  ETHAnimatedTransitionNewRootOptions : OptionSetType {
   
   public let rawValue: UInt
-
+  
   public init(rawValue newRawValue:UInt) {
     rawValue = newRawValue
   }
@@ -67,10 +68,8 @@ public struct  ETHAnimatedTransitionNewRootOptions : OptionSetType {
 public extension UIViewController {
   
   public func eth_backButtonTapped(){
-    self.navigationController!.eth_popViewControllerWithMatchingAnimationAnimated(true) { (Bool finished) -> Void in
-    }
+    self.navigationController?.eth_popViewControllerWithMatchingAnimationAnimated(true, completionHandler: nil)
   }
-  
 }
 
 public extension UINavigationController {
@@ -88,14 +87,14 @@ public extension UINavigationController {
       UIView.performWithoutAnimation({ () -> Void in
         self.pushViewController(viewController, animated: false)
       })
-    }, completion:completionHandler)
-   
+      }, completion:completionHandler)
+    
     let reverseOptionsContainer = TransitionOptionsContainer()
     reverseOptionsContainer.options = ReverseAnimationForAnimation(transitionOption)
     objc_setAssociatedObject(viewController, &TransitionOptionKey, reverseOptionsContainer, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     
     var title = ""
-    if let eth_currentBackButtonTitle = self.eth_currentBackButtonTitle() {
+    if let eth_currentBackButtonTitle = self.eth_currentBackButtonTitle {
       title = eth_currentBackButtonTitle
     }
     viewController.navigationItem.setCustomBackButtonWithTitle(title, target: viewController, selector: "eth_backButtonTapped")
@@ -128,7 +127,7 @@ public extension UINavigationController {
   *  @return The newly created navigation controller.
   */
   public func eth_transitionToNewRootViewController(viewController: UIViewController, transitionOption: UIViewAnimationOptions, completion:(Bool -> Void)) -> UINavigationController? {
-      return self.eth_transitionToNewRootViewController(viewController, options: ETHAnimatedTransitionNewRootOptions.NavigationController, transitionOption: transitionOption, completionHandler: completion) as? UINavigationController
+    return self.eth_transitionToNewRootViewController(viewController, options: ETHAnimatedTransitionNewRootOptions.NavigationController, transitionOption: transitionOption, completionHandler: completion) as? UINavigationController
   }
   
   
@@ -150,9 +149,10 @@ public extension UINavigationController {
     var resultViewController: UIViewController? = nil;
     if(options.contains(ETHAnimatedTransitionNewRootOptions.NavigationController)) {
       print("Transition to new root controller (%@), creating a new instance of UINavigationController for it \(viewController)")
-      let navigationController = UINavigationController()
-      navigationController.viewControllers = [viewController]
-      resultViewController = navigationController;
+      if let navigationController = ETHInjector().instanceForClass(UINavigationController) as? UINavigationController {
+        navigationController.viewControllers = [viewController]
+        resultViewController = navigationController;
+      }
     } else {
       print("Transition to new root controller \(viewController)")
       resultViewController = viewController;
@@ -182,7 +182,7 @@ public extension UINavigationController {
   *
   *  @return The popped view controller.
   */
-  public func eth_popViewControllerWithTransitionOption(transitionOption: UIViewAnimationOptions, completionHandler: (Bool -> Void)) -> UIViewController? {
+  public func eth_popViewControllerWithTransitionOption(transitionOption: UIViewAnimationOptions, completionHandler: (Bool -> Void)?) -> UIViewController? {
     
     let viewController = self.viewControllers.last
     
@@ -204,22 +204,28 @@ public extension UINavigationController {
   *
   *  @return The popped view controller.
   */
-  public func eth_popViewControllerWithMatchingAnimationAnimated(animated: Bool, completionHandler: (Bool -> Void)) -> UIViewController? {
+  public func eth_popViewControllerWithMatchingAnimationAnimated(animated: Bool, completionHandler: (Bool -> Void)?) -> UIViewController? {
     if(self.viewControllers.count == 0) {
       return nil
     }
-
-    let viewController = self.viewControllers.last!
+    
+    guard let viewController = self.viewControllers.last else { return nil }
+    
     if(!animated) {
       self.popViewControllerAnimated(false)
-      completionHandler(true)
+      if let completionHandler = completionHandler {
+        completionHandler(true)
+      }
     } else {
       if let transitionOptionContainer = objc_getAssociatedObject(viewController, &TransitionOptionKey) as? TransitionOptionsContainer {
         let transitionOption = transitionOptionContainer.options
+      
         self.eth_popViewControllerWithTransitionOption(animated ? transitionOption : UIViewAnimationOptions.TransitionNone, completionHandler: completionHandler)
       } else {
         self.popViewControllerAnimated(true)
-        completionHandler(true);
+        if let completionHandler = completionHandler {
+          completionHandler(true)
+        }
       }
     }
     return viewController
@@ -229,14 +235,14 @@ public extension UINavigationController {
   *  Retrieve the currently displayed back button title (if any).
   *  @return The current back button title, or nil if there is no back button.
   */
-  public func eth_currentBackButtonTitle() -> String? {
+  public final var eth_currentBackButtonTitle: String? {
     if(self.viewControllers.count < 2) {
       return nil;
     }
     let current = self.viewControllers[self.viewControllers.count - 1]
     let previous = self.viewControllers[self.viewControllers.count - 2]
     
-    return previous.navigationItem.title ?? current.navigationItem.title ?? previous.navigationController?.navigationBar.backItem?.title
+    return current.navigationItem.customBackButtonTitle ?? previous.navigationItem.customBackButtonTitle ?? previous.navigationController?.navigationBar.backItem?.title
   }
 }
 
