@@ -57,36 +57,36 @@ public extension UIScrollView {
 
 }
 
-private var keyboardScrollOffsetKey: UInt8 = 3
-private var scrollViewBottomInsetKey: UInt8 = 4
-private var scrollViewIndicatorBottomInsetKey: UInt8 = 5
+private var keyboardScrollOffsetKey: UInt8 = 4
+private var storedScrollViewBottomInsetKey: UInt8 = 5
+private var storedScrollViewIndicatorBottomInsetKey: UInt8 = 6
 
 public extension UIScrollView {
   
   private var keyboardScrollOffset: CGFloat {
     get {
-      return objc_getAssociatedObject(self, &keyboardScrollOffsetKey) as? CGFloat ?? CGFloat(0.0)
+      return (objc_getAssociatedObject(self, &keyboardScrollOffsetKey) as? CGFloat) ?? 0.0
     }
     set (offset) {
-      objc_setAssociatedObject(self, &keyboardScrollOffsetKey, offset, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
+      objc_setAssociatedObject(self, &keyboardScrollOffsetKey, offset, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
   }
   
   private var scrollViewBottomInset: CGFloat? {
     get {
-      return objc_getAssociatedObject(self, &scrollViewBottomInsetKey) as? CGFloat
+      return objc_getAssociatedObject(self, &storedScrollViewBottomInsetKey) as? CGFloat
     }
     set (offset) {
-      objc_setAssociatedObject(self, &scrollViewBottomInsetKey, offset, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
+      objc_setAssociatedObject(self, &storedScrollViewBottomInsetKey, offset, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
   }
   
   private var scrollViewIndicatorBottomInset: CGFloat? {
     get {
-      return objc_getAssociatedObject(self, &scrollViewIndicatorBottomInsetKey) as? CGFloat
+        return objc_getAssociatedObject(self, &storedScrollViewIndicatorBottomInsetKey) as? CGFloat
     }
     set (offset) {
-      objc_setAssociatedObject(self, &scrollViewIndicatorBottomInsetKey, offset, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
+      objc_setAssociatedObject(self, &storedScrollViewIndicatorBottomInsetKey, offset, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
   }
   
@@ -112,11 +112,14 @@ public extension UIScrollView {
     
     
     let keyboardOffset:CGFloat = keyboardScrollOffset
-    if isShowing {
-      
+    
+    if isShowing { // Will Show Keyboard!!!
+
+      //Setting up original inset values in case show has been called repeatedly for the same, 
+      // already visible keyboard
       let bottomInset = scrollViewBottomInset ?? self.contentInset.bottom
       if scrollViewBottomInset == nil {
-        self.scrollViewBottomInset = bottomInset
+        scrollViewBottomInset = bottomInset
       }
       
       let indicatorBottomInset = scrollViewIndicatorBottomInset ?? self.scrollIndicatorInsets.bottom
@@ -128,6 +131,7 @@ public extension UIScrollView {
       let positionInWindow = window.convertPoint(self.frame.origin, fromView: self.superview)
       let absoluteHeight = positionInWindow.y + self.frame.size.height + self.contentOffset.y
       
+      //Determining if keyboard interferes with the content of the scrollview in anyway.
       if absoluteHeight >= (screenBounds.size.height - endKeyboardRect.size.height) {
         var offset = max(0.0, screenBounds.size.height-absoluteHeight)
         
@@ -140,16 +144,26 @@ public extension UIScrollView {
         
         ETHLogVerbose("\(self) : Keyboard notification block (show): initial indicator offset is \(indicatorBottomInset)")
         
-        UIView.animateWithDuration(duration, delay: 0.0, options: options, animations: { () -> Void in
+        
+        let animationClosure = { ()->() in
           var edgeInsets = self.contentInset
-          edgeInsets.bottom = offset + (bottomInset ?? 0.0)
+          edgeInsets.bottom = offset + bottomInset
           self.contentInset = edgeInsets
           
           edgeInsets = self.scrollIndicatorInsets
-          self.scrollIndicatorInsets.bottom = offset + (indicatorBottomInset ?? 0.0)
+          self.scrollIndicatorInsets.bottom = offset + indicatorBottomInset
           self.scrollIndicatorInsets = edgeInsets
-          
-          }, completion: { (finished) -> Void in })
+        }
+        
+        UIView.animateWithDuration(duration,
+          delay: 0.0,
+          options: options,
+          animations:animationClosure,
+          completion: { (finished) -> Void in
+            animationClosure()
+        })
+      } else {
+        ETHLogInfo("\(self) : No need to reduce any viewable area, the keyboard is not interfering with the scrollview")
       }
     } else {
       let bottomInset:CGFloat = self.scrollViewBottomInset ?? 0.0
@@ -158,16 +172,22 @@ public extension UIScrollView {
       ETHLogDebug("\(self) : Keyboard notification block (hide): initial offset is \(bottomInset)")
       
       ETHLogVerbose ("\(self) : Keyboard notification block (hide): initial indicator offset is \(indicatorBottomInset)")
-      UIView.animateWithDuration(duration, delay: 0.0, options: options, animations: { () -> Void in
+      
+      let animationClosure = { ()->() in
         var edgeInsets = self.contentInset
         edgeInsets.bottom = bottomInset
         self.contentInset = edgeInsets
-        
         edgeInsets = self.scrollIndicatorInsets
         self.scrollIndicatorInsets.bottom = indicatorBottomInset
         self.scrollIndicatorInsets = edgeInsets
-        
-        }, completion: { (finished) -> Void in
+      }
+      
+      UIView.animateWithDuration(duration,
+        delay: 0.0,
+        options: options,
+        animations:animationClosure,
+        completion: { (finished) -> Void in
+          animationClosure()
           self.scrollViewBottomInset = nil
           self.scrollViewIndicatorBottomInset = nil
       })

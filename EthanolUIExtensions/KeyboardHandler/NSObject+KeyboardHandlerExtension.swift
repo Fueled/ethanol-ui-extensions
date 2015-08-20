@@ -79,10 +79,10 @@ final public func eth_deRegisterForKeyboardNotifications() {
 
   final private (set) public var eth_keyboardShown: Bool {
     get {
-      return (objc_getAssociatedObject(self, &isKeyboardShownKey) ?? NSNumber(bool: false)).boolValue
+        return objc_getAssociatedObject(self, &isKeyboardShownKey)?.boolValue ?? false
     }
     set (isShown) {
-      objc_setAssociatedObject(self, &isKeyboardShownKey, isShown, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
+      objc_setAssociatedObject(self, &isKeyboardShownKey, isShown, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
   }
   
@@ -106,10 +106,10 @@ final public func eth_deRegisterForKeyboardNotifications() {
   /** Read Only variable for determining if the object in question is currently observing keyboard Notifications */
   final private (set) public var eth_observingNotifications: Bool {
     get {
-      return (objc_getAssociatedObject(self, &isObservingNotificationsKey) ?? NSNumber(bool: false)).boolValue
+      return objc_getAssociatedObject(self, &isObservingNotificationsKey)?.boolValue ?? false
     }
     set (value) {
-      objc_setAssociatedObject(self, &isObservingNotificationsKey, NSNumber(bool: value), objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
+      objc_setAssociatedObject(self, &isObservingNotificationsKey, NSNumber(bool: value), objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
   }
 
@@ -208,10 +208,13 @@ public extension NSObject {
   
   private var keyboardSize: CGSize {
     get {
-      return (objc_getAssociatedObject(self, &keyboardSizeKey) ?? NSValue(CGSize: CGSize.zeroSize)).CGSizeValue()
+      if let size = objc_getAssociatedObject(self, &keyboardSizeKey) {
+        return size.CGSizeValue()
+      }
+      return CGSize.zeroSize
     }
     set (value) {
-      objc_setAssociatedObject(self, &keyboardSizeKey, NSValue(CGSize:value), objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN)
+      objc_setAssociatedObject(self, &keyboardSizeKey, NSValue(CGSize:value), objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
   }
   
@@ -226,10 +229,10 @@ public extension NSObject {
       if let closure = closure {
         let wrapperClass = KeyboardNotificationHandlerWrapper()
         wrapperClass.notificationClosure = closure
-        objc_setAssociatedObject(self, &keyboardNotificationHandlerClosureKey, wrapperClass, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+        objc_setAssociatedObject(self, &keyboardNotificationHandlerClosureKey, wrapperClass, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         // This is retain and not copy because we now store the closure encapsulated within a class since we cannot store it directly.
       } else {
-        objc_setAssociatedObject(self, &keyboardNotificationHandlerClosureKey, nil, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+        objc_setAssociatedObject(self, &keyboardNotificationHandlerClosureKey, nil, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
       }
     }
   }
