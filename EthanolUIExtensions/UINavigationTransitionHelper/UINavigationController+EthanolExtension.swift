@@ -93,13 +93,9 @@ public extension UINavigationController {
     reverseOptionsContainer.options = ReverseAnimationForAnimation(transitionOption)
     objc_setAssociatedObject(viewController, &TransitionOptionKey, reverseOptionsContainer, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     
-    var title = ""
-    if let eth_currentBackButtonTitle = self.eth_currentBackButtonTitle {
-      title = eth_currentBackButtonTitle
-    }
-    viewController.navigationItem.setCustomBackButtonWithTitle(title, target: viewController, selector: "eth_backButtonTapped")
+    let titleString = self.eth_currentBackButtonTitle ?? ""
+    viewController.navigationItem.setCustomBackButtonWithTitle(titleString, target: viewController, selector: "eth_backButtonTapped")
   }
-  
   
   /**
   *  Perform a transition to a new view controller instantly, discarding the current navigation stack.
@@ -115,7 +111,6 @@ public extension UINavigationController {
     return self.eth_transitionToNewRootViewController(viewController, transitionOption:UIViewAnimationOptions.TransitionNone, completion:completion)
   }
   
-  
   /**
   *  Perform a transition to a new view controller, discarding the current navigation stack, and allowing to specify the animation type.
   *  The used navigation controller type is the type of the navigation controller used to call the method.
@@ -127,10 +122,8 @@ public extension UINavigationController {
   *  @return The newly created navigation controller.
   */
   public func eth_transitionToNewRootViewController(viewController: UIViewController, transitionOption: UIViewAnimationOptions, completion:(Bool -> Void)) -> UINavigationController? {
-    return self.eth_transitionToNewRootViewController(viewController, options: ETHAnimatedTransitionNewRootOptions.NavigationController, transitionOption: transitionOption, completionHandler: completion) as? UINavigationController
+    return self.eth_transitionToNewRootViewController(viewController, options: .NavigationController, transitionOption: transitionOption, completionHandler: completion) as? UINavigationController
   }
-  
-  
   
   /**
   *  Perform a transition to a new view controller, discarding the current navigation stack, and allowing to specify the animation type.
@@ -147,7 +140,7 @@ public extension UINavigationController {
     
     let window = self.view.window ?? UIApplication.sharedApplication().windows.first!
     var resultViewController: UIViewController? = nil;
-    if(options.contains(ETHAnimatedTransitionNewRootOptions.NavigationController)) {
+    if(options.contains(.NavigationController)) {
       print("Transition to new root controller (%@), creating a new instance of UINavigationController for it \(viewController)")
       if let navigationController = ETHInjector().instanceForClass(UINavigationController) as? UINavigationController {
         navigationController.viewControllers = [viewController]
@@ -245,6 +238,3 @@ public extension UINavigationController {
     return current.navigationItem.customBackButtonTitle ?? previous.navigationItem.customBackButtonTitle ?? previous.navigationController?.navigationBar.backItem?.title
   }
 }
-
-
-
