@@ -1,1 +1,2 @@
+git "git@github.com:Fueled/ethanol-tools.git" ~> 0.1
 git "git@github.com:Fueled/ethanol-utilities.git" ~> 0.1
