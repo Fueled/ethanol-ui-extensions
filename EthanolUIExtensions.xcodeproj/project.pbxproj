@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0C18954E1B8B9F1D007109C2 /* ETHPlaceholderTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C18954C1B8B9F1D007109C2 /* ETHPlaceholderTextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0C18954F1B8B9F1D007109C2 /* ETHPlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C18954D1B8B9F1D007109C2 /* ETHPlaceholderTextView.m */; };
+		0CAA0E731B8D250D00271354 /* MKMapView+ZoomLevel.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CAA0E711B8D250D00271354 /* MKMapView+ZoomLevel.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0CAA0E741B8D250D00271354 /* MKMapView+ZoomLevel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CAA0E721B8D250D00271354 /* MKMapView+ZoomLevel.m */; };
 		3205E28E1B7DCBBB000E14FA /* EthanolUIExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 3205E28D1B7DCBBB000E14FA /* EthanolUIExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3205E2951B7DCBBB000E14FA /* EthanolUIExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3205E28A1B7DCBBB000E14FA /* EthanolUIExtensions.framework */; };
 		3205E29A1B7DCBBB000E14FA /* EthanolUIExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3205E2991B7DCBBB000E14FA /* EthanolUIExtensionsTests.swift */; };
@@ -35,6 +37,8 @@
 /* Begin PBXFileReference section */
 		0C18954C1B8B9F1D007109C2 /* ETHPlaceholderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ETHPlaceholderTextView.h; sourceTree = "<group>"; };
 		0C18954D1B8B9F1D007109C2 /* ETHPlaceholderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ETHPlaceholderTextView.m; sourceTree = "<group>"; };
+		0CAA0E711B8D250D00271354 /* MKMapView+ZoomLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKMapView+ZoomLevel.h"; sourceTree = "<group>"; };
+		0CAA0E721B8D250D00271354 /* MKMapView+ZoomLevel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKMapView+ZoomLevel.m"; sourceTree = "<group>"; };
 		3205E28A1B7DCBBB000E14FA /* EthanolUIExtensions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EthanolUIExtensions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3205E28D1B7DCBBB000E14FA /* EthanolUIExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EthanolUIExtensions.h; sourceTree = "<group>"; };
 		3205E28F1B7DCBBB000E14FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -82,6 +86,15 @@
 			name = PlaceholderTextView;
 			sourceTree = "<group>";
 		};
+		0C256E2F1B8D249B00A0CA2E /* MKMapViewCategory */ = {
+			isa = PBXGroup;
+			children = (
+				0CAA0E711B8D250D00271354 /* MKMapView+ZoomLevel.h */,
+				0CAA0E721B8D250D00271354 /* MKMapView+ZoomLevel.m */,
+			);
+			name = MKMapViewCategory;
+			sourceTree = "<group>";
+		};
 		3205E2801B7DCBBB000E14FA = {
 			isa = PBXGroup;
 			children = (
@@ -107,6 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				3205E28D1B7DCBBB000E14FA /* EthanolUIExtensions.h */,
+				0C256E2F1B8D249B00A0CA2E /* MKMapViewCategory */,
 				0C18954B1B8B9F0E007109C2 /* PlaceholderTextView */,
 				65A34AD21B81D78A00034E8F /* NavigationItemExtension */,
 				655A9E331B81FAEB00C1AAB3 /* UIViewControllerExtension */,
@@ -175,6 +189,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C18954E1B8B9F1D007109C2 /* ETHPlaceholderTextView.h in Headers */,
+				0CAA0E731B8D250D00271354 /* MKMapView+ZoomLevel.h in Headers */,
 				3205E28E1B7DCBBB000E14FA /* EthanolUIExtensions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -277,6 +292,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0CAA0E741B8D250D00271354 /* MKMapView+ZoomLevel.m in Sources */,
 				655A9E351B81FAEB00C1AAB3 /* UIViewController+EthanolExtension.swift in Sources */,
 				65A34AE21B81E2E600034E8F /* UINavigationItem+EthanolExtension.swift in Sources */,
 				32C26FFB1B81DEBA00A154CF /* NSObject+KeyboardHandlerExtension.swift in Sources */,
