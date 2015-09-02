@@ -214,42 +214,4 @@
   return [self eth_sizeForDistanceInMeters:CHK_FEET_TO_METERS(distanceFeet)];
 }
 
-#pragma mark - Deprecated methods
-
-- (void)setCenterCoordinate:(CLLocationCoordinate2D)centerCoordinate zoomLevel:(NSUInteger)zoomLevel animated:(BOOL)animated {
-  [self eth_setCenterCoordinate:centerCoordinate zoomLevel:zoomLevel animated:animated];
-}
-
-- (MKCoordinateRegion)coordinateRegionWithCenterCoordinate:(CLLocationCoordinate2D)centerCoordinate andZoomLevel:(NSUInteger)zoomLevel {
-  return [self eth_coordinateRegionWithCenterCoordinate:centerCoordinate andZoomLevel:zoomLevel];
-}
-
-- (double)zoomLevel {
-  return [self eth_zoomLevel];
-}
-
-- (CGFloat)sizeForDistanceInMeters:(CGFloat)distanceMeters forAreaCloseToLatitude:(CLLocationDegrees)latitude {
-  return [self eth_sizeForDistanceInMeters:distanceMeters forAreaCloseToLatitude:latitude];
-}
-
-- (CGFloat)sizeForDistanceInMiles:(CGFloat)distanceMiles forAreaCloseToLatitude:(CLLocationDegrees)latitude {
-  return [self eth_sizeForDistanceInMiles:distanceMiles forAreaCloseToLatitude:latitude];
-}
-
-- (CGFloat)sizeForDistanceInFeet:(CGFloat)distanceFeet forAreaCloseToLatitude:(CLLocationDegrees)latitude {
-  return [self eth_sizeForDistanceInFeet:distanceFeet forAreaCloseToLatitude:latitude];
-}
-
-- (CGFloat)sizeForDistanceInMeters:(CGFloat)distanceMeters {
-  return [self eth_sizeForDistanceInMeters:distanceMeters];
-}
-
-- (CGFloat)sizeForDistanceInMiles:(CGFloat)distanceMiles {
-  return [self eth_sizeForDistanceInMiles:distanceMiles];
-}
-
-- (CGFloat)sizeForDistanceInFeet:(CGFloat)distanceFeet {
-  return [self eth_sizeForDistanceInFeet:distanceFeet];
-}
-
 @end
