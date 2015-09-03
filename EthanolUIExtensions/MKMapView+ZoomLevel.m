@@ -16,39 +16,40 @@
 
 #import "MKMapView+ZoomLevel.h"
 
-#define MERCATOR_OFFSET 268435456
-#define MERCATOR_RADIUS 85445659.44705395
+#define kMercatorOffset 268435456
+#define kMercatorRadius 85445659.44705395
 #define kEarthCircumference 40075000.0f
-#define CHK_DEGREES_TO_RADIANS(x) ((x) / 180.0f * M_PI)
-#define CHK_METERS_TO_MILES(x) ((x) * 0.000621371f)
-#define CHK_MILES_TO_METERS(x) ((x) * 1609.34f)
-#define CHK_METERS_TO_FEET(x) ((x) * 3.28084f)
-#define CHK_FEET_TO_METERS(x) ((x) * 0.3048f)
+
+#define DEGREES_TO_RADIANS(x) ((x) / 180.0f * M_PI)
+#define METERS_TO_MILES(x) ((x) * 0.000621371f)
+#define MILES_TO_METERS(x) ((x) * 1609.34f)
+#define METERS_TO_FEET(x) ((x) * 3.28084f)
+#define FEET_TO_METERS(x) ((x) * 0.3048f)
 
 @implementation MKMapView (ZoomLevel)
 
 #pragma mark - Map conversion methods
 
 + (double)eth_longitudeToPixelSpaceX:(double)longitude {
-  return round(MERCATOR_OFFSET + MERCATOR_RADIUS * longitude * M_PI / 180.0);
+  return round(kMercatorOffset + kMercatorRadius * longitude * M_PI / 180.0f);
 }
 
 + (double)eth_latitudeToPixelSpaceY:(double)latitude {
   if (latitude == 90.0) {
-    return 0;
+    return 0.0;
   } else if (latitude == -90.0) {
-    return MERCATOR_OFFSET * 2;
+    return kMercatorOffset * 2.0;
   } else {
-    return round(MERCATOR_OFFSET - MERCATOR_RADIUS * logf((1 + sinf(latitude * M_PI / 180.0)) / (1 - sinf(latitude * M_PI / 180.0))) / 2.0);
+    return round(kMercatorOffset - kMercatorRadius * logf((1 + sinf(latitude * M_PI / 180.0)) / (1 - sinf(latitude * M_PI / 180.0))) / 2.0);
   }
 }
 
 + (double)eth_pixelSpaceXToLongitude:(double)pixelX {
-  return ((round(pixelX) - MERCATOR_OFFSET) / MERCATOR_RADIUS) * 180.0 / M_PI;
+  return ((round(pixelX) - kMercatorOffset) / kMercatorRadius) * 180.0 / M_PI;
 }
 
 + (double)eth_pixelSpaceYToLatitude:(double)pixelY {
-  return (M_PI / 2.0 - 2.0 * atan(exp((round(pixelY) - MERCATOR_OFFSET) / MERCATOR_RADIUS))) * 180.0 / M_PI;
+  return (M_PI / 2.0 - 2.0 * atan(exp((round(pixelY) - kMercatorOffset) / kMercatorRadius))) * 180.0 / M_PI;
 }
 
 #pragma mark - Helper methods
@@ -74,14 +75,14 @@
   double topLeftPixelY = centerPixelY - (scaledMapHeight / 2);
   
   // find delta between left and right longitudes
-  CLLocationDegrees minLng = [MKMapView eth_pixelSpaceXToLongitude:topLeftPixelX];
-  CLLocationDegrees maxLng = [MKMapView eth_pixelSpaceXToLongitude:topLeftPixelX + scaledMapWidth];
-  CLLocationDegrees longitudeDelta = maxLng - minLng;
+  CLLocationDegrees minLongitude = [MKMapView eth_pixelSpaceXToLongitude:topLeftPixelX];
+  CLLocationDegrees maxLongitude = [MKMapView eth_pixelSpaceXToLongitude:topLeftPixelX + scaledMapWidth];
+  CLLocationDegrees longitudeDelta = maxLongitude - minLongitude;
   
   // find delta between top and bottom latitudes
-  CLLocationDegrees minLat = [MKMapView eth_pixelSpaceYToLatitude:topLeftPixelY];
-  CLLocationDegrees maxLat = [MKMapView eth_pixelSpaceYToLatitude:topLeftPixelY + scaledMapHeight];
-  CLLocationDegrees latitudeDelta = -1 * (maxLat - minLat);
+  CLLocationDegrees minLatitude = [MKMapView eth_pixelSpaceYToLatitude:topLeftPixelY];
+  CLLocationDegrees maxLatitude = [MKMapView eth_pixelSpaceYToLatitude:topLeftPixelY + scaledMapHeight];
+  CLLocationDegrees latitudeDelta = -1 * (maxLatitude - minLatitude);
   
   // create and return the lat/lng span
   MKCoordinateSpan span = MKCoordinateSpanMake(latitudeDelta, longitudeDelta);
@@ -130,25 +131,25 @@
   double topLeftPixelX = centerPixelX - (scaledMapWidth / 2);
   
   // find delta between left and right longitudes
-  CLLocationDegrees minLng = [MKMapView eth_pixelSpaceXToLongitude:topLeftPixelX];
-  CLLocationDegrees maxLng = [MKMapView eth_pixelSpaceXToLongitude:topLeftPixelX + scaledMapWidth];
-  CLLocationDegrees longitudeDelta = maxLng - minLng;
+  CLLocationDegrees minLongitude = [MKMapView eth_pixelSpaceXToLongitude:topLeftPixelX];
+  CLLocationDegrees maxLongitude = [MKMapView eth_pixelSpaceXToLongitude:topLeftPixelX + scaledMapWidth];
+  CLLocationDegrees longitudeDelta = maxLongitude - minLongitude;
   
   // if we’re at a pole then calculate the distance from the pole towards the equator
   // as MKMapView doesn’t like drawing boxes over the poles
   double topPixelY = centerPixelY - (scaledMapHeight / 2);
   double bottomPixelY = centerPixelY + (scaledMapHeight / 2);
   BOOL adjustedCenterPoint = NO;
-  if (topPixelY > MERCATOR_OFFSET * 2) {
+  if (topPixelY > kMercatorOffset * 2) {
     topPixelY = centerPixelY - scaledMapHeight;
-    bottomPixelY = MERCATOR_OFFSET * 2;
+    bottomPixelY = kMercatorOffset * 2;
     adjustedCenterPoint = YES;
   }
   
   // find delta between top and bottom latitudes
-  CLLocationDegrees minLat = [MKMapView eth_pixelSpaceYToLatitude:topPixelY];
-  CLLocationDegrees maxLat = [MKMapView eth_pixelSpaceYToLatitude:bottomPixelY];
-  CLLocationDegrees latitudeDelta = -1 * (maxLat - minLat);
+  CLLocationDegrees minLatitude = [MKMapView eth_pixelSpaceYToLatitude:topPixelY];
+  CLLocationDegrees maxLatitude = [MKMapView eth_pixelSpaceYToLatitude:bottomPixelY];
+  CLLocationDegrees latitudeDelta = -1 * (maxLatitude - minLatitude);
   
   // create and return the lat/lng span
   MKCoordinateSpan span = MKCoordinateSpanMake(latitudeDelta, longitudeDelta);
@@ -191,15 +192,15 @@
 // Using formula: http://wiki.openstreetmap.org/wiki/Zoom_levels
 
 - (CGFloat)eth_sizeForDistanceInMeters:(CGFloat)distanceMeters forAreaCloseToLatitude:(CLLocationDegrees)latitude {
-  return (distanceMeters / (kEarthCircumference * cos(CHK_DEGREES_TO_RADIANS(latitude)) / pow(2, self.eth_zoomLevel + 8))) / 0.3409627122;
+  return (distanceMeters / (kEarthCircumference * cos(DEGREES_TO_RADIANS(latitude)) / pow(2, self.eth_zoomLevel + 8))) / 0.3409627122;
 }
 
 - (CGFloat)eth_sizeForDistanceInMiles:(CGFloat)distanceMiles forAreaCloseToLatitude:(CLLocationDegrees)latitude {
-  return [self eth_sizeForDistanceInMeters:CHK_MILES_TO_METERS(distanceMiles) forAreaCloseToLatitude:latitude];
+  return [self eth_sizeForDistanceInMeters:MILES_TO_METERS(distanceMiles) forAreaCloseToLatitude:latitude];
 }
 
 - (CGFloat)eth_sizeForDistanceInFeet:(CGFloat)distanceFeet forAreaCloseToLatitude:(CLLocationDegrees)latitude {
-  return [self eth_sizeForDistanceInMeters:CHK_FEET_TO_METERS(distanceFeet) forAreaCloseToLatitude:latitude];
+  return [self eth_sizeForDistanceInMeters:FEET_TO_METERS(distanceFeet) forAreaCloseToLatitude:latitude];
 }
 
 - (CGFloat)eth_sizeForDistanceInMeters:(CGFloat)distanceMeters {
@@ -207,49 +208,11 @@
 }
 
 - (CGFloat)eth_sizeForDistanceInMiles:(CGFloat)distanceMiles {
-  return [self eth_sizeForDistanceInMeters:CHK_MILES_TO_METERS(distanceMiles)];
+  return [self eth_sizeForDistanceInMeters:MILES_TO_METERS(distanceMiles)];
 }
 
 - (CGFloat)eth_sizeForDistanceInFeet:(CGFloat)distanceFeet {
-  return [self eth_sizeForDistanceInMeters:CHK_FEET_TO_METERS(distanceFeet)];
-}
-
-#pragma mark - Deprecated methods
-
-- (void)setCenterCoordinate:(CLLocationCoordinate2D)centerCoordinate zoomLevel:(NSUInteger)zoomLevel animated:(BOOL)animated {
-  [self eth_setCenterCoordinate:centerCoordinate zoomLevel:zoomLevel animated:animated];
-}
-
-- (MKCoordinateRegion)coordinateRegionWithCenterCoordinate:(CLLocationCoordinate2D)centerCoordinate andZoomLevel:(NSUInteger)zoomLevel {
-  return [self eth_coordinateRegionWithCenterCoordinate:centerCoordinate andZoomLevel:zoomLevel];
-}
-
-- (double)zoomLevel {
-  return [self eth_zoomLevel];
-}
-
-- (CGFloat)sizeForDistanceInMeters:(CGFloat)distanceMeters forAreaCloseToLatitude:(CLLocationDegrees)latitude {
-  return [self eth_sizeForDistanceInMeters:distanceMeters forAreaCloseToLatitude:latitude];
-}
-
-- (CGFloat)sizeForDistanceInMiles:(CGFloat)distanceMiles forAreaCloseToLatitude:(CLLocationDegrees)latitude {
-  return [self eth_sizeForDistanceInMiles:distanceMiles forAreaCloseToLatitude:latitude];
-}
-
-- (CGFloat)sizeForDistanceInFeet:(CGFloat)distanceFeet forAreaCloseToLatitude:(CLLocationDegrees)latitude {
-  return [self eth_sizeForDistanceInFeet:distanceFeet forAreaCloseToLatitude:latitude];
-}
-
-- (CGFloat)sizeForDistanceInMeters:(CGFloat)distanceMeters {
-  return [self eth_sizeForDistanceInMeters:distanceMeters];
-}
-
-- (CGFloat)sizeForDistanceInMiles:(CGFloat)distanceMiles {
-  return [self eth_sizeForDistanceInMiles:distanceMiles];
-}
-
-- (CGFloat)sizeForDistanceInFeet:(CGFloat)distanceFeet {
-  return [self eth_sizeForDistanceInFeet:distanceFeet];
+  return [self eth_sizeForDistanceInMeters:FEET_TO_METERS(distanceFeet)];
 }
 
 @end
