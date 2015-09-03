@@ -211,7 +211,7 @@ public extension NSObject {
       if let size = objc_getAssociatedObject(self, &keyboardSizeKey) {
         return size.CGSizeValue()
       }
-      return CGSize.zeroSize
+      return CGSize.zero
     }
     set (value) {
       objc_setAssociatedObject(self, &keyboardSizeKey, NSValue(CGSize:value), objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
