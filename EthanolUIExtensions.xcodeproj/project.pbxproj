@@ -98,8 +98,6 @@
 		3205E2801B7DCBBB000E14FA = {
 			isa = PBXGroup;
 			children = (
-				F4C275511B83B3D700838B17 /* CocoaLumberjack.framework */,
-				F4C275521B83B3D700838B17 /* EthanolTools.framework */,
 				3205E28C1B7DCBBB000E14FA /* EthanolUIExtensions */,
 				3205E2981B7DCBBB000E14FA /* EthanolUIExtensionsTests */,
 				F4C3849A1B7E6DA700F2B30A /* Dependencies */,
@@ -176,6 +174,8 @@
 		F4C3849A1B7E6DA700F2B30A /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
+				F4C275511B83B3D700838B17 /* CocoaLumberjack.framework */,
+				F4C275521B83B3D700838B17 /* EthanolTools.framework */,
 				F4C384981B7E6DA300F2B30A /* EthanolUtilities.framework */,
 			);
 			name = Dependencies;
@@ -448,10 +448,6 @@
 		3205E2A21B7DCBBB000E14FA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				INFOPLIST_FILE = EthanolUIExtensionsTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Fueled.EthanolUIExtensionsTests;
@@ -462,10 +458,6 @@
 		3205E2A31B7DCBBB000E14FA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				INFOPLIST_FILE = EthanolUIExtensionsTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Fueled.EthanolUIExtensionsTests;
