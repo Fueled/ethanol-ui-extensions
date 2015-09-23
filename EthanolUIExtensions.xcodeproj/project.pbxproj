@@ -35,10 +35,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0C18954C1B8B9F1D007109C2 /* ETHPlaceholderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ETHPlaceholderTextView.h; sourceTree = "<group>"; };
-		0C18954D1B8B9F1D007109C2 /* ETHPlaceholderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ETHPlaceholderTextView.m; sourceTree = "<group>"; };
-		0CAA0E711B8D250D00271354 /* MKMapView+ZoomLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKMapView+ZoomLevel.h"; sourceTree = "<group>"; };
-		0CAA0E721B8D250D00271354 /* MKMapView+ZoomLevel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKMapView+ZoomLevel.m"; sourceTree = "<group>"; };
+		0C18954C1B8B9F1D007109C2 /* ETHPlaceholderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; path = ETHPlaceholderTextView.h; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
+		0C18954D1B8B9F1D007109C2 /* ETHPlaceholderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = ETHPlaceholderTextView.m; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
+		0CAA0E711B8D250D00271354 /* MKMapView+ZoomLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; path = "MKMapView+ZoomLevel.h"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
+		0CAA0E721B8D250D00271354 /* MKMapView+ZoomLevel.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = "MKMapView+ZoomLevel.m"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		3205E28A1B7DCBBB000E14FA /* EthanolUIExtensions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EthanolUIExtensions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3205E28D1B7DCBBB000E14FA /* EthanolUIExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EthanolUIExtensions.h; sourceTree = "<group>"; };
 		3205E28F1B7DCBBB000E14FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
