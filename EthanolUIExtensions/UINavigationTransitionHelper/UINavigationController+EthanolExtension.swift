@@ -126,7 +126,7 @@ public extension UIWindow {
 			self.rootViewController = resultViewController
 		}
 		// Don't perform the transition if there is no animation option
-		if (transitionOption.contains(UIViewAnimationOptions.TransitionNone)) {
+		if (transitionOption == UIViewAnimationOptions.TransitionNone) {
 			viewTransitionAnimations()
 			dispatch_async(dispatch_get_main_queue()) {
 				completionHandler?(true)
@@ -180,7 +180,7 @@ public extension UINavigationController {
 			UIView.performWithoutAnimation({ () -> Void in
 				self.popViewControllerAnimated(false)
 			})
-			}, completion: completionHandler)
+		}, completion: completionHandler)
 		
 		return viewController
 	}
