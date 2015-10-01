@@ -20,7 +20,7 @@ private let TransitionDurationOption = { (options:UIViewAnimationOptions) -> NST
 	switch(options) {
 	case UIViewAnimationOptions.TransitionCurlUp, UIViewAnimationOptions.TransitionCurlDown:
 		timeInterval = 0.35
-	case UIViewAnimationOptions.TransitionFlipFromTop,UIViewAnimationOptions.TransitionFlipFromLeft,UIViewAnimationOptions.TransitionFlipFromRight,UIViewAnimationOptions.TransitionFlipFromBottom:
+	case UIViewAnimationOptions.TransitionFlipFromTop, UIViewAnimationOptions.TransitionFlipFromLeft, UIViewAnimationOptions.TransitionFlipFromRight, UIViewAnimationOptions.TransitionFlipFromBottom:
 		timeInterval = 0.75
 	default:
 		break
@@ -66,8 +66,7 @@ public struct  ETHAnimatedTransitionNewRootOptions: OptionSetType {
 }
 
 public extension UIViewController {
-	
-	public func eth_backButtonTapped(){
+	public func eth_backButtonTapped() {
 		self.navigationController?.eth_popViewControllerWithMatchingAnimationAnimated(true, completionHandler: nil)
 	}
 }
@@ -83,7 +82,7 @@ public extension UIWindow {
 	*
 	*  @return The newly created navigation controller.
 	*/
-	public func eth_transitionToNewRootViewController(viewController: UIViewController, completion: (Bool -> Void)) -> UINavigationController? {
+	public func eth_transitionToNewRootViewController(viewController: UIViewController, completion: (Bool -> Void)?) -> UINavigationController? {
 		return self.eth_transitionToNewRootViewController(viewController, transitionOption:UIViewAnimationOptions.TransitionNone, completion:completion)
 	}
 	
@@ -97,7 +96,7 @@ public extension UIWindow {
 	*
 	*  @return The newly created navigation controller.
 	*/
-	public func eth_transitionToNewRootViewController(viewController: UIViewController, transitionOption: UIViewAnimationOptions, completion:(Bool -> Void)) -> UINavigationController? {
+	public func eth_transitionToNewRootViewController(viewController: UIViewController, transitionOption: UIViewAnimationOptions, completion:(Bool -> Void)?) -> UINavigationController? {
 		return self.eth_transitionToNewRootViewController(viewController, options: .NavigationController, transitionOption: transitionOption, completionHandler: completion) as? UINavigationController
 	}
 	
@@ -112,7 +111,7 @@ public extension UIWindow {
 	*
 	*  @return The newly created navigation controller.
 	*/
-	public func eth_transitionToNewRootViewController(viewController: UIViewController, options: ETHAnimatedTransitionNewRootOptions, transitionOption: UIViewAnimationOptions, completionHandler: (Bool -> Void)) -> UIViewController?  {
+	public func eth_transitionToNewRootViewController(viewController: UIViewController, options: ETHAnimatedTransitionNewRootOptions, transitionOption: UIViewAnimationOptions, completionHandler: (Bool -> Void)?) -> UIViewController?  {
 		var resultViewController: UIViewController? = nil;
 		if(options.contains(.NavigationController)) {
 			if let navigationController = ETHInjector().instanceForClass(UINavigationController) as? UINavigationController {
@@ -129,7 +128,9 @@ public extension UIWindow {
 		// Don't perform the transition if there is no animation option
 		if (transitionOption.contains(UIViewAnimationOptions.TransitionNone)) {
 			viewTransitionAnimations()
-			completionHandler(true)
+			dispatch_async(dispatch_get_main_queue()) {
+				completionHandler?(true)
+			}
 			return resultViewController
 		}
 		
@@ -149,13 +150,12 @@ public extension UINavigationController {
 	*  @param transitionOption  The transition animation to use. It must start with UIViewAnimationOptionTransition.
 	*  @param completionHandler A block called when the transition animation has completed.
 	*/
-	public func eth_animatedTransitionToViewController(viewController: UIViewController, transitionOption: UIViewAnimationOptions, completionHandler: (Bool -> Void)) {
-		
+	public func eth_animatedTransitionToViewController(viewController: UIViewController, transitionOption: UIViewAnimationOptions, completionHandler: (Bool -> Void)?) {
 		UIView.transitionWithView(self.view, duration: TransitionDurationOption(transitionOption), options: transitionOption, animations: { () -> Void in
 			UIView.performWithoutAnimation({ () -> Void in
 				self.pushViewController(viewController, animated: false)
 			})
-			}, completion:completionHandler)
+		}, completion:completionHandler)
 		
 		let reverseOptionsContainer = TransitionOptionsContainer()
 		reverseOptionsContainer.options = ReverseAnimationForAnimation(transitionOption)
@@ -174,7 +174,6 @@ public extension UINavigationController {
 	*  @return The popped view controller.
 	*/
 	public func eth_popViewControllerWithTransitionOption(transitionOption: UIViewAnimationOptions, completionHandler: (Bool -> Void)?) -> UIViewController? {
-		
 		let viewController = self.viewControllers.last
 		
 		UIView.transitionWithView(self.view, duration: TransitionDurationOption(transitionOption), options: transitionOption, animations: { () -> Void in
@@ -197,6 +196,9 @@ public extension UINavigationController {
 	*/
 	public func eth_popViewControllerWithMatchingAnimationAnimated(animated: Bool, completionHandler: (Bool -> Void)?) -> UIViewController? {
 		if(self.viewControllers.count == 0) {
+			dispatch_async(dispatch_get_main_queue()) {
+				completionHandler?(true)
+			}
 			return nil
 		}
 		
@@ -204,8 +206,8 @@ public extension UINavigationController {
 		
 		if(!animated) {
 			self.popViewControllerAnimated(false)
-			if let completionHandler = completionHandler {
-				completionHandler(true)
+			dispatch_async(dispatch_get_main_queue()) {
+				completionHandler?(true)
 			}
 		} else {
 			if let transitionOptionContainer = objc_getAssociatedObject(viewController, &TransitionOptionKey) as? TransitionOptionsContainer {
@@ -214,8 +216,8 @@ public extension UINavigationController {
 				self.eth_popViewControllerWithTransitionOption(animated ? transitionOption : UIViewAnimationOptions.TransitionNone, completionHandler: completionHandler)
 			} else {
 				self.popViewControllerAnimated(true)
-				if let completionHandler = completionHandler {
-					completionHandler(true)
+				dispatch_async(dispatch_get_main_queue()) {
+					completionHandler?(true)
 				}
 			}
 		}
