@@ -16,5 +16,5 @@ FOUNDATION_EXPORT const unsigned char EthanolUIExtensionsVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <EthanolUIExtensions/PublicHeader.h>
 
-#import <EthanolUIExtensions/ETHPlaceholderTextView.h>
-#import <EthanolUIExtensions/MKMapView+ZoomLevel.h>
+#import "ETHPlaceholderTextView.h"
+#import "MKMapView+ZoomLevel.h"
