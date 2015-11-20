@@ -95,9 +95,7 @@ public extension UIScrollView {
 	Internally updates scrollview insets
 	*/
 	private func handleReceivedKeyboardNotification(isShowing: Bool, notificationState: KeyboardNotificationState, startKeyboardRect: CGRect, endKeyboardRect: CGRect, duration: NSTimeInterval, options:UIViewAnimationOptions) {
-		
 		guard let window = self.window else {
-			ETHLogFatal("Notification Handler Called on a scrollview without a window!")
 			return
 		}
 		
