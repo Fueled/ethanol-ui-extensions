@@ -1,9 +1,9 @@
 [submodule "Carthage/Checkouts/ethanol-utilities"]
 	path = Carthage/Checkouts/ethanol-utilities
-	url = https://github.com/Fueled/ethanol-utilities.git
+	url = ssh://git@github.com/Fueled/ethanol-utilities.git
 [submodule "Carthage/Checkouts/CocoaLumberjack"]
 	path = Carthage/Checkouts/CocoaLumberjack
-	url = https://github.com/CocoaLumberjack/CocoaLumberjack.git
+	url = ssh://git@github.com/CocoaLumberjack/CocoaLumberjack.git
 [submodule "Carthage/Checkouts/ethanol-tools"]
 	path = Carthage/Checkouts/ethanol-tools
-	url = https://github.com/Fueled/ethanol-tools.git
+	url = ssh://git@github.com/Fueled/ethanol-tools.git
