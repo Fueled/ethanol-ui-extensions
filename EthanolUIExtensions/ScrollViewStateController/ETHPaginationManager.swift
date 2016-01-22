@@ -62,7 +62,7 @@ extension ETHPaginationManager: ETHScrollViewStateControllerDataSource {
   public func stateControllerInsertLoaderInsets(startAnimation: Bool) -> UIEdgeInsets {
     var newInset = self.scrollView.contentInset
     newInset.bottom += startAnimation ? self.stateConfig.loaderFrame.size.height : -self.stateConfig.loaderFrame.size.height
-    return newInset!
+    return newInset
   }
   
   public func stateControllerLoaderFrame() -> CGRect {
