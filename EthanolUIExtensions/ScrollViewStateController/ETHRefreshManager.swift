@@ -9,62 +9,60 @@
 import Foundation
 import UIKit
 
-public protocol ETHRefreshManagerDelegate: NSObjectProtocol {
+public protocol ETHRefreshManagerDelegate {
   func refreshManagerDidStartLoading(controller: ETHRefreshManager, onCompletion: CompletionHandler)
 }
 
 public class ETHRefreshManager: NSObject {
-  
-  weak var delegate: ETHRefreshManagerDelegate?
-  var scrollView: UIScrollView!
+  var delegate: ETHRefreshManagerDelegate?
+  var scrollView = UIScrollView()
   var scrollViewStateController: ETHScrollViewStateController!
   var stateConfig: ETHStateConfiguration!
-  
-  public init(scrollView: UIScrollView?, delegate: ETHRefreshManagerDelegate?, stateConfig: ETHStateConfiguration = ETHStateConfiguration(thresholdInitiateLoading: 0, loaderFrame: CGRectMake(0, -kDefaultLoaderHeight, UIScreen.mainScreen().bounds.size.width, kDefaultLoaderHeight), thresholdStartLoading: -kDefaultLoaderHeight)) {
 
-    super.init()
+  static let DefaultStateConfig = ETHStateConfiguration(thresholdInitiateLoading: 0, thresholdStartLoading: -defaultLoaderHeight,
+		loaderFrame: CGRectMake(0, -defaultLoaderHeight,UIScreen.mainScreen().bounds.size.width, defaultLoaderHeight),
+		showDefaultLoader: true)
+
+  public init(scrollView: UIScrollView, delegate: ETHRefreshManagerDelegate?, stateConfig: ETHStateConfiguration? = nil) {
+
+   super.init()
     
-    self.scrollView = scrollView
-    self.delegate = delegate
-    self.stateConfig = stateConfig
-    self.scrollViewStateController = ETHScrollViewStateController(scrollView: scrollView, dataSource: self, delegate: self, showDefaultLoader: stateConfig.showDefaultLoader)
+   self.scrollView = scrollView
+   self.delegate = delegate
+   self.stateConfig = stateConfig ?? ETHRefreshManager.DefaultStateConfig
+   self.scrollViewStateController = ETHScrollViewStateController(scrollView: scrollView, dataSource: self, delegate: self,
+		showDefaultLoader: self.stateConfig.showDefaultLoader)
   }
-  
-  convenience override init() {
-    self.init(scrollView: nil, delegate: nil)
-  }
-  
 }
 
+// MARK: - ETHScrollViewStateControllerDataSource
 extension ETHRefreshManager: ETHScrollViewStateControllerDataSource {
-  
-  public func stateControllerShouldInitiateLoading(offset: CGFloat) -> Bool {
+  public func scrollViewStateControllerShouldInitiateLoading(offset: CGFloat) -> Bool {
     return offset < self.stateConfig.thresholdInitiateLoading
   }
   
-  public func stateControllerDidReleaseToStartLoading(offset: CGFloat) -> Bool {
+  public func scrollViewStateControllerShouldReleaseToStartLoading(offset: CGFloat) -> Bool {
     return offset < self.stateConfig.thresholdStartLoading
   }
   
-  public func stateControllerDidReleaseToCancelLoading(offset: CGFloat) -> Bool {
+  public func scrollViewStateControllerShouldReleaseToCancelLoading(offset: CGFloat) -> Bool {
     return offset > self.stateConfig.thresholdStartLoading
   }
 
-  public func stateControllerInsertLoaderInsets(startAnimation: Bool) -> UIEdgeInsets {
+  public func scrollViewStateControllerInsertLoaderInsets(startAnimation: Bool) -> UIEdgeInsets {
     var newInset = self.scrollView.contentInset
     newInset.top += startAnimation ? self.stateConfig.loaderFrame.size.height : -self.stateConfig.loaderFrame.size.height
     return newInset
   }
   
-  public func stateControllerLoaderFrame() -> CGRect {
+  public func scrollViewStateControllerLoaderFrame() -> CGRect {
     return self.stateConfig.loaderFrame
   }
-  
 }
 
+// MARK: - ETHScrollViewStateControllerDelegate
 extension ETHRefreshManager: ETHScrollViewStateControllerDelegate {
-  
-  public func stateControllerDidStartLoading(controller: ETHScrollViewStateController, onCompletion: CompletionHandler) {
+  public func scrollViewStateControllerDidStartLoading(controller: ETHScrollViewStateController, onCompletion: CompletionHandler) {
     self.delegate?.refreshManagerDidStartLoading(self, onCompletion: onCompletion)
   }
   

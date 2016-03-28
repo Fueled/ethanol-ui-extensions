@@ -9,79 +9,83 @@
 import Foundation
 import UIKit
 
-public protocol ETHHorizontalPaginationManagerDelegate: NSObjectProtocol {
+public protocol ETHHorizontalPaginationManagerDelegate {
   func horizontalPaginationManagerDidStartLoading(controller: ETHHorizontalPaginationManager, onCompletion: CompletionHandler)
 }
 
 public class ETHHorizontalPaginationManager: NSObject {
-  
-  weak var delegate: ETHHorizontalPaginationManagerDelegate?
-  var scrollView: UIScrollView!
+  var delegate: ETHHorizontalPaginationManagerDelegate?
+  var scrollView = UIScrollView()
   var scrollViewStateController: ETHScrollViewStateController!
   var stateConfig: ETHStateConfiguration!
-  
-  public init(scrollView: UIScrollView?, delegate: ETHHorizontalPaginationManagerDelegate?, stateConfig: ETHStateConfiguration = ETHStateConfiguration(thresholdInitiateLoading: 0, loaderFrame: CGRectMake(0, 0, kDefaultLoaderHeight, UIScreen.mainScreen().bounds.size.height), thresholdStartLoading: 0)) {
-    
-    super.init()
-    
-    self.scrollView = scrollView
-    self.delegate = delegate
-    self.stateConfig = stateConfig
-    self.scrollViewStateController = ETHScrollViewStateController(scrollView: scrollView, dataSource: self, delegate: self, showDefaultLoader: stateConfig.showDefaultLoader)
-  }
-  
-  override convenience init() {
-    self.init(scrollView: nil, delegate: nil)
-  }
-  
-  private func calculateDelta(offset: CGFloat) -> CGFloat {
+  static let DefaultStateConfig = ETHStateConfiguration(thresholdInitiateLoading: 0, thresholdStartLoading: 0,
+		loaderFrame: CGRectMake(0, 0, defaultLoaderHeight, UIScreen.mainScreen().bounds.size.height),
+		showDefaultLoader: true)
+
+	/**
+	Initialization method
+
+	- parameter scrollView:  scrollView
+	- parameter delegate:    pagination manager delegate
+	- parameter stateConfig: set to default state configuration if state configuration is not specified
+
+	- returns: horizontal pagination manager
+	*/
+	public init(scrollView: UIScrollView, delegate: ETHHorizontalPaginationManagerDelegate, stateConfig: ETHStateConfiguration? = nil) {
+		super.init()
+
+		self.scrollView = scrollView
+		self.delegate = delegate
+		self.stateConfig = stateConfig ?? ETHHorizontalPaginationManager.DefaultStateConfig
+		self.scrollViewStateController = ETHScrollViewStateController(scrollView: scrollView, dataSource: self,
+			delegate: self, showDefaultLoader: self.stateConfig.showDefaultLoader)
+	}
+
+  private func horizontalOffsetValue(offset: CGFloat) -> CGFloat {
     let calculatedOffset = max(0, self.scrollView.contentSize.width - self.scrollView.frame.size.width)
-    let delta = offset - calculatedOffset
-    return delta
+    let horizontalOffset = offset - calculatedOffset
+    return horizontalOffset
   }
-  
 }
 
+// MARK: - ETHScrollViewStateControllerDataSource
 extension ETHHorizontalPaginationManager: ETHScrollViewStateControllerDataSource {
-  
-  public func stateControllerWillObserveVerticalScrolling() -> Bool {
+  public func scrollViewStateControllerWillObserveVerticalScrolling() -> Bool {
     return false
   }
   
-  public func stateControllerShouldInitiateLoading(offset: CGFloat) -> Bool {
-    let shouldStart = self.calculateDelta(offset) > self.stateConfig.thresholdInitiateLoading
+  public func scrollViewStateControllerShouldInitiateLoading(offset: CGFloat) -> Bool {
+    let shouldStart = self.horizontalOffsetValue(offset) > self.stateConfig.thresholdInitiateLoading
     return shouldStart
   }
   
-  public func stateControllerDidReleaseToStartLoading(offset: CGFloat) -> Bool {
-    let shouldStart = self.calculateDelta(offset) > self.stateConfig.thresholdStartLoading
+  public func scrollViewStateControllerShouldReleaseToStartLoading(offset: CGFloat) -> Bool {
+    let shouldStart = self.horizontalOffsetValue(offset) > self.stateConfig.thresholdStartLoading
     return shouldStart
   }
   
-  public func stateControllerDidReleaseToCancelLoading(offset: CGFloat) -> Bool {
-    let shouldStart = self.calculateDelta(offset) < self.stateConfig.thresholdStartLoading
+  public func scrollViewStateControllerShouldReleaseToCancelLoading(offset: CGFloat) -> Bool {
+    let shouldStart = self.horizontalOffsetValue(offset) < self.stateConfig.thresholdStartLoading
     return shouldStart
   }
   
-  public func stateControllerInsertLoaderInsets(startAnimation: Bool) -> UIEdgeInsets {
+  public func scrollViewStateControllerInsertLoaderInsets(startAnimation: Bool) -> UIEdgeInsets {
     var newInset = self.scrollView.contentInset
     newInset.right += startAnimation ? self.stateConfig.loaderFrame.size.width : -self.stateConfig.loaderFrame.size.width
     return newInset
   }
   
-  public func stateControllerLoaderFrame() -> CGRect {
+  public func scrollViewStateControllerLoaderFrame() -> CGRect {
     var frame = self.stateConfig.loaderFrame
     frame.origin.x = self.scrollView.contentSize.width
     self.stateConfig.loaderFrame = frame
     return frame
   }
-  
 }
 
+// MARK: - ETHScrollViewStateControllerDelegate
 extension ETHHorizontalPaginationManager: ETHScrollViewStateControllerDelegate {
-  
-  public func stateControllerDidStartLoading(controller: ETHScrollViewStateController, onCompletion: CompletionHandler) {
+  public func scrollViewStateControllerDidStartLoading(controller: ETHScrollViewStateController, onCompletion: CompletionHandler) {
     self.delegate?.horizontalPaginationManagerDidStartLoading(self, onCompletion: onCompletion)
   }
-  
 }

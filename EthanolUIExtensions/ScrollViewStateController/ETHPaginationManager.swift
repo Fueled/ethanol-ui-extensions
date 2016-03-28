@@ -9,63 +9,65 @@
 import Foundation
 import UIKit
 
-public protocol ETHPaginationManagerDelegate: NSObjectProtocol {
+public protocol ETHPaginationManagerDelegate {
   func paginationManagerDidStartLoading(controller: ETHPaginationManager, onCompletion: CompletionHandler)
 }
 
 public class ETHPaginationManager: NSObject {
-  
-  weak var delegate: ETHPaginationManagerDelegate?
-  var scrollView: UIScrollView!
+  var delegate: ETHPaginationManagerDelegate?
+  var scrollView = UIScrollView()
   var scrollViewStateController: ETHScrollViewStateController!
   var stateConfig: ETHStateConfiguration!
-  
-  public init(scrollView: UIScrollView?, delegate: ETHPaginationManagerDelegate?, stateConfig: ETHStateConfiguration = ETHStateConfiguration(thresholdInitiateLoading: 0, loaderFrame: CGRectMake(0, 0, UIScreen.mainScreen().bounds.size.width, kDefaultLoaderHeight), thresholdStartLoading: kDefaultLoaderHeight)) {
-    
+  static let DefaultStateConfig = ETHStateConfiguration(thresholdInitiateLoading: 0, thresholdStartLoading: defaultLoaderHeight,
+	loaderFrame: CGRectMake(0, 0, UIScreen.mainScreen().bounds.size.width, defaultLoaderHeight),
+	showDefaultLoader: true)
+
+  public init(scrollView: UIScrollView, delegate: ETHPaginationManagerDelegate, stateConfig: ETHStateConfiguration? = nil) {
     super.init()
     
     self.scrollView = scrollView
     self.delegate = delegate
-    self.stateConfig = stateConfig
-    self.scrollViewStateController = ETHScrollViewStateController(scrollView: scrollView, dataSource: self, delegate: self, showDefaultLoader: stateConfig.showDefaultLoader)
+    self.stateConfig = stateConfig ?? ETHPaginationManager.DefaultStateConfig
+    self.scrollViewStateController = ETHScrollViewStateController(scrollView: scrollView, dataSource: self, delegate: self,
+														   showDefaultLoader: self.stateConfig.showDefaultLoader)
   }
-  
-  convenience override init() {
-    self.init(scrollView: nil, delegate: nil)
-  }
-  
-  private func calculateDelta(offset: CGFloat) -> CGFloat {
+
+	/**
+	Calculating scrollView offset, that is how far scrollView has moved in vertical direction from bottom
+	- parameter offset: scrollView's current offset
+	- returns: Offset of scrollView bottom from super view's bottom
+	*/
+  private func offsetValueFromBottom(offset: CGFloat) -> CGFloat {
     let calculatedOffset = max(0, self.scrollView.contentSize.height - self.scrollView.frame.size.height)
-    let delta = offset - calculatedOffset
-    return delta
+    let bottomOffset = offset - calculatedOffset
+    return bottomOffset
   }
-  
 }
 
+// MARK: - ETHScrollViewStateControllerDataSource
 extension ETHPaginationManager: ETHScrollViewStateControllerDataSource {
-  
-  public func stateControllerShouldInitiateLoading(offset: CGFloat) -> Bool {
-    let shouldStart = self.calculateDelta(offset) > self.stateConfig.thresholdInitiateLoading
+  public func scrollViewStateControllerShouldInitiateLoading(offset: CGFloat) -> Bool {
+    let shouldStart = self.offsetValueFromBottom(offset) > self.stateConfig.thresholdInitiateLoading
     return shouldStart
   }
   
-  public func stateControllerDidReleaseToStartLoading(offset: CGFloat) -> Bool {
-    let shouldStart = self.calculateDelta(offset) > self.stateConfig.thresholdStartLoading
+  public func scrollViewStateControllerShouldReleaseToStartLoading(offset: CGFloat) -> Bool {
+    let shouldStart = self.offsetValueFromBottom(offset) > self.stateConfig.thresholdStartLoading
     return shouldStart
   }
   
-  public func stateControllerDidReleaseToCancelLoading(offset: CGFloat) -> Bool {
-    let shouldStart = self.calculateDelta(offset) < self.stateConfig.thresholdStartLoading
+  public func scrollViewStateControllerShouldReleaseToCancelLoading(offset: CGFloat) -> Bool {
+    let shouldStart = self.offsetValueFromBottom(offset) < self.stateConfig.thresholdStartLoading
     return shouldStart
   }
   
-  public func stateControllerInsertLoaderInsets(startAnimation: Bool) -> UIEdgeInsets {
+  public func scrollViewStateControllerInsertLoaderInsets(startAnimation: Bool) -> UIEdgeInsets {
     var newInset = self.scrollView.contentInset
     newInset.bottom += startAnimation ? self.stateConfig.loaderFrame.size.height : -self.stateConfig.loaderFrame.size.height
     return newInset
   }
   
-  public func stateControllerLoaderFrame() -> CGRect {
+  public func scrollViewStateControllerLoaderFrame() -> CGRect {
     var frame = self.stateConfig.loaderFrame
     frame.origin.y = self.scrollView.contentSize.height
     self.stateConfig.loaderFrame = frame
@@ -74,9 +76,10 @@ extension ETHPaginationManager: ETHScrollViewStateControllerDataSource {
  
 }
 
+// MARK: - ETHScrollViewStateControllerDelegate
 extension ETHPaginationManager: ETHScrollViewStateControllerDelegate {
   
-  public func stateControllerDidStartLoading(controller: ETHScrollViewStateController, onCompletion: CompletionHandler) {
+  public func scrollViewStateControllerDidStartLoading(controller: ETHScrollViewStateController, onCompletion: CompletionHandler) {
     self.delegate?.paginationManagerDidStartLoading(self, onCompletion: onCompletion)
   }
   

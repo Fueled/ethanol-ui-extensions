@@ -16,96 +16,132 @@ import UIKit
 -One can design their own pull-to-refresh or paginator by implementing ETHScrollViewStateController's datasource methods
 */
 
+/**
+Scroll view states
+
+- Normal:        when user is simply scrolling to see data
+- Ready:         when user has pulled the scrollView enough i.e. beyond a threshold and loading could begin if released at this stage
+- WillBeLoading: when user has released the scrollView (beyond a threshold) and it is about to get stablise at a threshold
+- Loading:       when user has started loading
+*/
 enum ETHScrollViewStateControllerState: Int {
-  case Normal         // when user is simply scrolling to see data
-  case Ready          // when user has pulled the scrollView enough i.e. beyond a threshold and loading could begin if released at this stage
-  case WillBeLoading  // when user has released the scrollView (beyond a threshold) and it is about to get stablise at a threshold
-  case Loading        // when user has started loading
+  case Normal
+  case Ready
+  case WillBeLoading
+  case Loading
 }
 
-let kDefaultLoaderHeight: CGFloat = 64
+/**
+*  Scroll view state configuration's initial values
+*/
+public struct ETHStateConfiguration {
+	var thresholdInitiateLoading: CGFloat = 0
+	var thresholdStartLoading: CGFloat = 0
+	var loaderFrame = CGRectZero
+	var showDefaultLoader = true
+}
+
+// Default height of pull to refresh or paginator
+let defaultLoaderHeight: CGFloat = 64.0
 
 public typealias CompletionHandler = () -> Void
 
-public protocol ETHScrollViewStateControllerDataSource: NSObjectProtocol {
-  // it defines the condition whether to use y or x point for content offset
-  func stateControllerWillObserveVerticalScrolling() -> Bool
+public protocol ETHScrollViewStateControllerDataSource {
+	/**
+	It defines the condition whether to use y or x point for content offset
+
+	- returns: Boolean value
+	*/
+  func scrollViewStateControllerWillObserveVerticalScrolling() -> Bool
+
+	/**
+	It defines the condition when to enter the loading zone
+
+	- parameter offset: Calculated offset value of scrollView's offset from edges
+
+	- returns: Boolean value
+	*/
+  func scrollViewStateControllerShouldInitiateLoading(offset: CGFloat) -> Bool
+
+	/**
+	It defines the condition when the loader stablises (after releasing) and loading can start
+
+	- parameter offset: Calculated offset value of scrollView's offset from edges
+
+	- returns: Boolean value
+	*/
+  func scrollViewStateControllerShouldReleaseToStartLoading(offset: CGFloat) -> Bool
   
-  // it defines the condition when to enter the loading zone
-  func stateControllerShouldInitiateLoading(offset: CGFloat) -> Bool
+	/**
+	It defines the condition when to cancel loading
+
+	- parameter offset:  Calculated offset value of scrollView's offset from edges
+
+	- returns: Boolean value
+	*/
+  func scrollViewStateControllerShouldReleaseToCancelLoading(offset: CGFloat) -> Bool
   
-  // it defines the condition when the loader stablises (after releasing) and loading can start
-  func stateControllerDidReleaseToStartLoading(offset: CGFloat) -> Bool
+	/**
+	It will return the loader frame
+
+	- returns: Loader frame
+	*/
+  func scrollViewStateControllerLoaderFrame() -> CGRect
   
-  // it defines the condition when to cancel loading
-  func stateControllerDidReleaseToCancelLoading(offset: CGFloat) -> Bool
-  
-  // it will return the loader frame
-  func stateControllerLoaderFrame() -> CGRect
-  
-  // it will return the loader inset
-  func stateControllerInsertLoaderInsets(startAnimation: Bool) -> UIEdgeInsets
+	/**
+	It will return the loader inset
+
+	- parameter startAnimation: Float value for animation duration
+
+	- returns: Loader insets
+	*/
+  func scrollViewStateControllerInsertLoaderInsets(startAnimation: Bool) -> UIEdgeInsets
 }
 
 extension ETHScrollViewStateControllerDataSource {
-  
-  public func stateControllerWillObserveVerticalScrolling() -> Bool {
+  public func scrollViewStateControllerWillObserveVerticalScrolling() -> Bool {
     // default implementation
     return true
   }
   
 }
 
-public protocol ETHScrollViewStateControllerDelegate: NSObjectProtocol {
-  func stateControllerWillStartLoading(controller: ETHScrollViewStateController, loadingView: UIActivityIndicatorView)
-  func stateControllerShouldStartLoading(controller: ETHScrollViewStateController) -> Bool
-  func stateControllerDidStartLoading(controller: ETHScrollViewStateController, onCompletion: CompletionHandler)
-  func stateControllerDidFinishLoading(controller: ETHScrollViewStateController)
+public protocol ETHScrollViewStateControllerDelegate {
+  func scrollViewStateControllerWillStartLoading(controller: ETHScrollViewStateController, loadingView: UIActivityIndicatorView)
+  func scrollViewStateControllerShouldStartLoading(controller: ETHScrollViewStateController) -> Bool
+  func scrollViewStateControllerDidStartLoading(controller: ETHScrollViewStateController, onCompletion: CompletionHandler)
+  func scrollViewStateControllerDidFinishLoading(controller: ETHScrollViewStateController)
 }
 
 extension ETHScrollViewStateControllerDelegate {
-  public func stateControllerShouldStartLoading(controller: ETHScrollViewStateController) -> Bool {
+  public func scrollViewStateControllerShouldStartLoading(controller: ETHScrollViewStateController) -> Bool {
     // default implementation
     return true
   }
 
-  public func stateControllerWillStartLoading(controller: ETHScrollViewStateController, loadingView: UIActivityIndicatorView) {
+  public func scrollViewStateControllerWillStartLoading(controller: ETHScrollViewStateController, loadingView: UIActivityIndicatorView) {
     // default imlpementation
   }
   
-  public func stateControllerDidFinishLoading(controller: ETHScrollViewStateController) {
+  public func scrollViewStateControllerDidFinishLoading(controller: ETHScrollViewStateController) {
     // default imlpementation
-  }
-}
-
-public class ETHStateConfiguration: NSObject {
-  var thresholdInitiateLoading: CGFloat = 0
-  var thresholdStartLoading: CGFloat = 0
-  var loaderFrame: CGRect = CGRectZero
-  var showDefaultLoader = true
-  
-  init(thresholdInitiateLoading: CGFloat, loaderFrame: CGRect, thresholdStartLoading: CGFloat, showDefaultLoader: Bool = true) {
-    self.loaderFrame = loaderFrame
-    self.showDefaultLoader = showDefaultLoader
-    self.thresholdInitiateLoading = thresholdInitiateLoading
-    self.thresholdStartLoading = thresholdStartLoading
   }
 }
 
 public class ETHScrollViewStateController: NSObject {
   
-  let kDefaultLoadingHeight: CGFloat = 64.0
-  let kInsetInsertAnimationDuration: NSTimeInterval = 0.7
-  let kInsetRemoveAnimationDuration: NSTimeInterval = 0.3
+  let insetInsertAnimationDuration: NSTimeInterval = 0.7
+  let insetRemoveAnimationDuration: NSTimeInterval = 0.3
   
-  weak var dataSource: ETHScrollViewStateControllerDataSource!
-  weak var delegate: ETHScrollViewStateControllerDelegate!
+  var dataSource: ETHScrollViewStateControllerDataSource?
+  var delegate: ETHScrollViewStateControllerDelegate?
   
-  private var scrollView: UIScrollView!
+  private var scrollView = UIScrollView()
   private var state: ETHScrollViewStateControllerState = .Normal
   private var loadingView = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
   
-  public init(scrollView: UIScrollView?, dataSource: ETHScrollViewStateControllerDataSource?, delegate: ETHScrollViewStateControllerDelegate?, showDefaultLoader: Bool = true) {
+  public init(scrollView: UIScrollView, dataSource: ETHScrollViewStateControllerDataSource,
+	delegate: ETHScrollViewStateControllerDelegate, showDefaultLoader: Bool = true) {
     super.init()
     
     self.scrollView = scrollView
@@ -118,20 +154,18 @@ public class ETHScrollViewStateController: NSObject {
       addDefaultLoadView()
     }
   }
-  
-  convenience override init() {
-    self.init(scrollView: nil, dataSource: nil, delegate: nil)
-  }
-  
-  private func addDefaultLoadView() {
-    self.loadingView.frame = self.dataSource.stateControllerLoaderFrame()
-    self.scrollView.addSubview(self.loadingView)
-  }
-  
+
+	private func addDefaultLoadView() {
+		if let frame = self.dataSource?.scrollViewStateControllerLoaderFrame() {
+			self.loadingView.frame = frame
+			self.scrollView.addSubview(self.loadingView)
+		}
+	}
+
   override public func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
     if keyPath == "contentOffset" {
       var newOffset: CGFloat = 0
-      if dataSource.stateControllerWillObserveVerticalScrolling() {
+      if dataSource?.scrollViewStateControllerWillObserveVerticalScrolling() == true {
         newOffset = (change?[NSKeyValueChangeNewKey]?.CGPointValue?.y)!
 
       } else {
@@ -141,25 +175,23 @@ public class ETHScrollViewStateController: NSObject {
       handleLoadingCycle(newOffset)
     }
   }
-  
+
   private func handleLoadingCycle(offset: CGFloat) {
-    if (self.dataSource.stateControllerShouldInitiateLoading(offset)) {
-      self.delegate.stateControllerWillStartLoading(self, loadingView: self.loadingView)
-    }
-    
+	if (self.dataSource?.scrollViewStateControllerShouldInitiateLoading(offset) == true) {
+		self.delegate?.scrollViewStateControllerWillStartLoading(self, loadingView: self.loadingView)
+	}
+
     if self.scrollView.dragging {
       switch self.state {
       case .Normal:
-        if self.dataSource.stateControllerDidReleaseToStartLoading(offset) {
-          self.state = .Ready
-        }
-        
+		if (self.dataSource?.scrollViewStateControllerShouldReleaseToStartLoading(offset) == true) {
+			self.state = .Ready
+		}
       case .Ready:
-        if self.dataSource.stateControllerDidReleaseToCancelLoading(offset) {
-          self.state = .Normal
-        }
-        
-      default: break
+		if (self.dataSource?.scrollViewStateControllerShouldReleaseToCancelLoading(offset) == true) {
+			self.state = .Normal
+		}
+	  default: break
       }
       
     } else if scrollView.decelerating {
@@ -171,10 +203,10 @@ public class ETHScrollViewStateController: NSObject {
 
   private func handleReadyState() {
     self.state = .WillBeLoading
-    
-    if self.delegate.stateControllerShouldStartLoading(self) {
-      self.loadingView.frame = self.dataSource.stateControllerLoaderFrame()
-      
+	if self.delegate?.scrollViewStateControllerShouldStartLoading(self) == true {
+		if let frame = self.dataSource?.scrollViewStateControllerLoaderFrame() {
+			self.loadingView.frame = frame
+		}
       startUIAnimation({ [weak self] () -> Void in
         if let weakSelf = self {
           weakSelf.startLoading()
@@ -188,8 +220,7 @@ public class ETHScrollViewStateController: NSObject {
 
   private func startLoading() {
     self.state = .Loading
-    
-    self.delegate.stateControllerDidStartLoading(self, onCompletion: {[weak self] () -> Void in
+    self.delegate?.scrollViewStateControllerDidStartLoading(self, onCompletion: {[weak self] () -> Void in
       if let weakSelf = self {
         weakSelf.stopLoading()
       }
@@ -201,7 +232,7 @@ public class ETHScrollViewStateController: NSObject {
     
     self.stopUIAnimation({ [weak self] () -> Void in
       if let weakSelf = self {
-        weakSelf.delegate.stateControllerDidFinishLoading(weakSelf)
+        weakSelf.delegate?.scrollViewStateControllerDidFinishLoading(weakSelf)
       }
     })
   }
@@ -223,17 +254,18 @@ public class ETHScrollViewStateController: NSObject {
       self.loadingView.startAnimating()
       dispatch_async(dispatch_get_main_queue()) { () -> Void in
         let oldContentOffset = self.scrollView.contentOffset
-        self.scrollView.contentInset = self.dataSource.stateControllerInsertLoaderInsets(startAnimation)
+		if let contentInsets = self.dataSource?.scrollViewStateControllerInsertLoaderInsets(startAnimation) {
+			self.scrollView.contentInset = contentInsets
+		}
         self.scrollView.contentOffset = oldContentOffset /* this has been done to make the animation smoother as just animating the content inset has little glitch */
         onCompletion()
       }
-
     } else {
       self.loadingView.stopAnimating()
       dispatch_async(dispatch_get_main_queue()) { () -> Void in
-        UIView.animateWithDuration(self.kInsetRemoveAnimationDuration, animations: {[weak self] () -> Void in
-          if let weakSelf = self {
-            weakSelf.scrollView.contentInset = weakSelf.dataSource.stateControllerInsertLoaderInsets(startAnimation)
+        UIView.animateWithDuration(self.insetRemoveAnimationDuration, animations: {[weak self] () -> Void in
+          if let weakSelf = self, let contentInsets = weakSelf.dataSource?.scrollViewStateControllerInsertLoaderInsets(startAnimation) {
+            weakSelf.scrollView.contentInset = contentInsets
           }
         }, completion: { (finished: Bool) -> Void in
             onCompletion()
@@ -241,9 +273,11 @@ public class ETHScrollViewStateController: NSObject {
       }
     }
   }
-  
+
+	/**
+	removing KVO observer
+	*/
   deinit {
     self.scrollView.removeObserver(self, forKeyPath: "contentOffset")
   }
-  
 }
