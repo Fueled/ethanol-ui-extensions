@@ -36,7 +36,7 @@ extension UIViewController {
 	public static var topMostController: UIViewController? {
 		var topController: UIViewController? = nil
 		
-		guard let window = UIApplication.sharedApplication().keyWindow else {
+		guard let window = UIApplication.shared.keyWindow else {
 			return nil
 		}
 		

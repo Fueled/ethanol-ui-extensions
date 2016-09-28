@@ -40,7 +40,7 @@ public extension UIScrollView {
 	*  The default block handles everything for you in term of keyboard management when a UITextField is selected.
 	*  This method also adds a inset to the keyboard notifications
 	*/
-	public func eth_handleKeyboardNotificationsWithOffset(offset: CGFloat) {
+	public func eth_handleKeyboardNotificationsWithOffset(_ offset: CGFloat) {
 		self.keyboardScrollOffset = offset
 		self.eth_handleKeyboardNotifications()
 	}
@@ -81,7 +81,7 @@ private var storedScrollViewIndicatorBottomInsetKey: UInt8 = 6
 
 public extension UIScrollView {
 	
-	private var keyboardScrollOffset: CGFloat {
+	fileprivate var keyboardScrollOffset: CGFloat {
 		get {
 			return (objc_getAssociatedObject(self, &keyboardScrollOffsetKey) as? CGFloat) ?? 0.0
 		}
@@ -90,7 +90,7 @@ public extension UIScrollView {
 		}
 	}
 	
-	private var scrollViewBottomInset: CGFloat? {
+	fileprivate var scrollViewBottomInset: CGFloat? {
 		get {
 			return objc_getAssociatedObject(self, &storedScrollViewBottomInsetKey) as? CGFloat
 		}
@@ -99,7 +99,7 @@ public extension UIScrollView {
 		}
 	}
 	
-	private var scrollViewIndicatorBottomInset: CGFloat? {
+	fileprivate var scrollViewIndicatorBottomInset: CGFloat? {
 		get {
 			return objc_getAssociatedObject(self, &storedScrollViewIndicatorBottomInsetKey) as? CGFloat
 		}
@@ -112,7 +112,7 @@ public extension UIScrollView {
 	Private function called within the default block to handle keyboard notifications
 	Internally updates scrollview insets
 	*/
-	private func handleReceivedKeyboardNotification(isShowing: Bool, notificationState: KeyboardNotificationState, startKeyboardRect: CGRect, endKeyboardRect: CGRect, duration: NSTimeInterval, options:UIViewAnimationOptions) {
+	fileprivate func handleReceivedKeyboardNotification(_ isShowing: Bool, notificationState: KeyboardNotificationState, startKeyboardRect: CGRect, endKeyboardRect: CGRect, duration: TimeInterval, options:UIViewAnimationOptions) {
 		guard let window = self.window else {
 			return
 		}
@@ -122,7 +122,7 @@ public extension UIScrollView {
 		ETHLogTrace("\(self) :Calling defaultKeyboardNotificationBlock: \(currentShowState), \(startKeyboardRect), \(endKeyboardRect), \(duration), \(options)")
 		
 		// Dont handle didshow/didhide states for a scrollview by default.
-		if notificationState == .DidShow || notificationState == .DidHide {
+		if notificationState == .didShow || notificationState == .didHide {
 			return
 		}
 		
@@ -143,8 +143,8 @@ public extension UIScrollView {
 				scrollViewIndicatorBottomInset = indicatorBottomInset
 			}
 			
-			let screenBounds = UIScreen.mainScreen().bounds
-			let positionInWindow = window.convertPoint(self.frame.origin, fromView: self.superview)
+			let screenBounds = UIScreen.main.bounds
+			let positionInWindow = window.convert(self.frame.origin, from: self.superview)
 			let absoluteHeight = positionInWindow.y + self.frame.size.height + self.contentOffset.y
 			
 			//Determining if keyboard interferes with the content of the scrollview in anyway.
@@ -171,7 +171,7 @@ public extension UIScrollView {
 					self.scrollIndicatorInsets = edgeInsets
 				}
 				
-				UIView.animateWithDuration(duration,
+				UIView.animate(withDuration: duration,
 					delay: 0.0,
 					options: options,
 					animations:animationClosure,
@@ -198,7 +198,7 @@ public extension UIScrollView {
 				self.scrollIndicatorInsets = edgeInsets
 			}
 			
-			UIView.animateWithDuration(duration,
+			UIView.animate(withDuration: duration,
 				delay: 0.0,
 				options: options,
 				animations:animationClosure,

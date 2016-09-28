@@ -32,29 +32,29 @@ import EthanolTools
 
 public let UIAnimationOptionsFromCurve = {(curve : UIViewAnimationCurve) -> UIViewAnimationOptions in
 	switch (curve) {
-	case .EaseInOut:
-		return .CurveEaseInOut
-	case .EaseIn:
-		return .CurveEaseIn
-	case .EaseOut:
-		return .CurveEaseOut
-	case .Linear:
-		return .CurveLinear
+	case .easeInOut:
+		return UIViewAnimationOptions()
+	case .easeIn:
+		return .curveEaseIn
+	case .easeOut:
+		return .curveEaseOut
+	case .linear:
+		return .curveLinear
 	}
 }
 
 /** Enum describing keyboard notification which triggered the callback */
 
 @objc public enum KeyboardNotificationState: NSInteger {
-	case DidShow
-	case DidHide
-	case WillShow
-	case WillHide
+	case didShow
+	case didHide
+	case willShow
+	case willHide
 }
 
 /** Helper typecast for Notification handler Block */
 
-public typealias KeyboardNotificationBlock = (isShowing: Bool, notificationState: KeyboardNotificationState,startKeyboardRect: CGRect, endKeyboardRect: CGRect, duration: NSTimeInterval, options: UIViewAnimationOptions) -> Void
+public typealias KeyboardNotificationBlock = (_ isShowing: Bool, _ notificationState: KeyboardNotificationState,_ startKeyboardRect: CGRect, _ endKeyboardRect: CGRect, _ duration: TimeInterval, _ options: UIViewAnimationOptions) -> Void
 
 /**
 ETHKeyboardHandlerObjectExtension Extends NSObjects to begin handling keyboard
@@ -68,7 +68,7 @@ public extension NSObject {
 	In Case the reciever is already observing notifications, this method simply replaces the handler with the new handler.
 	*/
 	
-	final public func eth_registerForKeyboardNotificationsWithHandler(handler:KeyboardNotificationBlock) {
+	final public func eth_registerForKeyboardNotificationsWithHandler(_ handler:@escaping KeyboardNotificationBlock) {
 		self.notificationClosure = handler
 		if !eth_observingNotifications { // Replaces handler if already observing
 			registerForKeyboardNotifications()
@@ -78,7 +78,7 @@ public extension NSObject {
 	/** Public Method to Return ClassName if any, Can be overwritten by a subclass */
 	
 	public var ClassName: String {
-		return NSStringFromClass(self.dynamicType).componentsSeparatedByString(".").last ?? ">NSObject<"
+		return NSStringFromClass(type(of: self)).components(separatedBy: ".").last ?? ">NSObject<"
 	}
 	
 	/** Public method to Remove Observing from keyboard notifications */
@@ -86,18 +86,18 @@ public extension NSObject {
 	final public func eth_deRegisterForKeyboardNotifications() {
 		self.eth_observingNotifications = false
 		self.notificationClosure = nil
-		NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
-		NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardDidShowNotification, object: nil)
-		NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardDidHideNotification, object: nil)
-		NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
+		NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+		NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardDidShow, object: nil)
+		NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardDidHide, object: nil)
+		NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
 		ETHLogDebug("DERegistered Observers for keyboard Notification for object \(self) of class \(ClassName)")
 	}
 	
 	/** Read Only variable to describe Keyboard State */
 	
-	final private (set) public var eth_keyboardShown: Bool {
+	final fileprivate (set) public var eth_keyboardShown: Bool {
 		get {
-			return objc_getAssociatedObject(self, &isKeyboardShownKey)?.boolValue ?? false
+			return (objc_getAssociatedObject(self, &isKeyboardShownKey) as AnyObject).boolValue ?? false
 		}
 		set (isShown) {
 			objc_setAssociatedObject(self, &isKeyboardShownKey, isShown, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
@@ -122,12 +122,12 @@ public extension NSObject {
 		return self.keyboardSize
 	}
 	/** Read Only variable for determining if the object in question is currently observing keyboard Notifications */
-	final private (set) public var eth_observingNotifications: Bool {
+	final fileprivate (set) public var eth_observingNotifications: Bool {
 		get {
-			return objc_getAssociatedObject(self, &isObservingNotificationsKey)?.boolValue ?? false
+			return (objc_getAssociatedObject(self, &isObservingNotificationsKey) as AnyObject).boolValue ?? false
 		}
 		set (value) {
-			objc_setAssociatedObject(self, &isObservingNotificationsKey, NSNumber(bool: value), objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+			objc_setAssociatedObject(self, &isObservingNotificationsKey, NSNumber(value: value as Bool), objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 		}
 	}
 	
@@ -139,29 +139,29 @@ public extension NSObject {
 
 public extension NSObject {
 	
-	private func registerForKeyboardNotifications() {
+	fileprivate func registerForKeyboardNotifications() {
 		//Adding Observers with blocks to avoid conflict with namespaces of owning NSObjects
 		
-		NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardWillShowNotification, object: nil, queue: NSOperationQueue.mainQueue()) { [weak self](notification) -> Void in
-			if let this = self where this.eth_observingNotifications {
+		NotificationCenter.default.addObserver(forName: NSNotification.Name.UIKeyboardWillShow, object: nil, queue: OperationQueue.main) { [weak self](notification) -> Void in
+			if let this = self , this.eth_observingNotifications {
 				this.keyboardWillShow(notification)
 			}
 		}
 		
-		NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardWillHideNotification, object: nil, queue: NSOperationQueue.mainQueue()) { [weak self](notification) -> Void in
-			if let this = self where this.eth_observingNotifications {
+		NotificationCenter.default.addObserver(forName: NSNotification.Name.UIKeyboardWillHide, object: nil, queue: OperationQueue.main) { [weak self](notification) -> Void in
+			if let this = self , this.eth_observingNotifications {
 				this.keyboardWillHide(notification)
 			}
 		}
 		
-		NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardDidShowNotification, object: nil, queue: NSOperationQueue.mainQueue()) { [weak self] (notification) -> Void in
-			if let this = self where this.eth_observingNotifications {
+		NotificationCenter.default.addObserver(forName: NSNotification.Name.UIKeyboardDidShow, object: nil, queue: OperationQueue.main) { [weak self] (notification) -> Void in
+			if let this = self , this.eth_observingNotifications {
 				this.keyboardDidShow(notification)
 			}
 		}
 		
-		NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardDidHideNotification, object: nil, queue: NSOperationQueue.mainQueue()) { [weak self] (notification) -> Void in
-			if let this = self where this.eth_observingNotifications {
+		NotificationCenter.default.addObserver(forName: NSNotification.Name.UIKeyboardDidHide, object: nil, queue: OperationQueue.main) { [weak self] (notification) -> Void in
+			if let this = self , this.eth_observingNotifications {
 				this.keyboardDidHide(notification)
 			}
 		}
@@ -169,46 +169,46 @@ public extension NSObject {
 		self.eth_observingNotifications = true
 	}
 	
-	private func keyboardWillShow(notification: NSNotification) {
-		guard let userInfo = notification.userInfo else { return }
+	fileprivate func keyboardWillShow(_ notification: Notification) {
+		guard let userInfo = (notification as NSNotification).userInfo else { return }
 		let keyboardData = self.generateDataForKeyboardNotification(userInfo)
-		self.respondToKeyboardNotificationsWithKeyboardShowing(true, notificationState: .WillShow, startKeyboardRect: keyboardData.beginRect, endKeyboardRect: keyboardData.endRect, duration: keyboardData.duration, options: keyboardData.option)
+		self.respondToKeyboardNotificationsWithKeyboardShowing(true, notificationState: .willShow, startKeyboardRect: keyboardData.beginRect, endKeyboardRect: keyboardData.endRect, duration: keyboardData.duration, options: keyboardData.option)
 	}
 	
-	private func keyboardDidShow(notification: NSNotification) {
-		guard let userInfo = notification.userInfo else { return }
+	fileprivate func keyboardDidShow(_ notification: Notification) {
+		guard let userInfo = (notification as NSNotification).userInfo else { return }
 		let keyboardData = self.generateDataForKeyboardNotification(userInfo)
-		self.respondToKeyboardNotificationsWithKeyboardShowing(true, notificationState: .DidShow, startKeyboardRect: keyboardData.beginRect, endKeyboardRect: keyboardData.endRect, duration: keyboardData.duration, options: keyboardData.option)
+		self.respondToKeyboardNotificationsWithKeyboardShowing(true, notificationState: .didShow, startKeyboardRect: keyboardData.beginRect, endKeyboardRect: keyboardData.endRect, duration: keyboardData.duration, options: keyboardData.option)
 	}
 	
-	private func keyboardDidHide(notification: NSNotification) {
-		guard let userInfo = notification.userInfo else { return }
+	fileprivate func keyboardDidHide(_ notification: Notification) {
+		guard let userInfo = (notification as NSNotification).userInfo else { return }
 		let keyboardData = self.generateDataForKeyboardNotification(userInfo)
-		self.respondToKeyboardNotificationsWithKeyboardShowing(false, notificationState: .DidHide, startKeyboardRect: keyboardData.beginRect, endKeyboardRect: keyboardData.endRect, duration: keyboardData.duration, options: keyboardData.option)
+		self.respondToKeyboardNotificationsWithKeyboardShowing(false, notificationState: .didHide, startKeyboardRect: keyboardData.beginRect, endKeyboardRect: keyboardData.endRect, duration: keyboardData.duration, options: keyboardData.option)
 	}
 	
-	private func keyboardWillHide(notification: NSNotification) {
-		guard let userInfo = notification.userInfo else { return }
+	fileprivate func keyboardWillHide(_ notification: Notification) {
+		guard let userInfo = (notification as NSNotification).userInfo else { return }
 		let keyboardData = self.generateDataForKeyboardNotification(userInfo)
-		self.respondToKeyboardNotificationsWithKeyboardShowing(false, notificationState: .WillHide, startKeyboardRect: keyboardData.beginRect, endKeyboardRect: keyboardData.endRect, duration: keyboardData.duration, options: keyboardData.option)
+		self.respondToKeyboardNotificationsWithKeyboardShowing(false, notificationState: .willHide, startKeyboardRect: keyboardData.beginRect, endKeyboardRect: keyboardData.endRect, duration: keyboardData.duration, options: keyboardData.option)
 	}
 	
 	/** Internal Method to update Closure with data */
-	private func respondToKeyboardNotificationsWithKeyboardShowing(isShowing: Bool, notificationState: KeyboardNotificationState, startKeyboardRect: CGRect, endKeyboardRect: CGRect, duration: NSTimeInterval, options: UIViewAnimationOptions) {
+	fileprivate func respondToKeyboardNotificationsWithKeyboardShowing(_ isShowing: Bool, notificationState: KeyboardNotificationState, startKeyboardRect: CGRect, endKeyboardRect: CGRect, duration: TimeInterval, options: UIViewAnimationOptions) {
 		self.eth_keyboardShown = isShowing
 		if let closure = self.notificationClosure {
-			closure(isShowing: isShowing, notificationState: notificationState, startKeyboardRect: startKeyboardRect, endKeyboardRect: endKeyboardRect, duration: duration, options: options)
+			closure(isShowing, notificationState, startKeyboardRect, endKeyboardRect, duration, options)
 		} else {
 			ETHLogWarning("ETHLogWarn: There is no closure supplied to handle responses for Keyboard Notifications to object \(self)")
 		}
 	}
 	
 	/** Internal Method to Calculate data from Keyboard Hide/Show Notifications = (keyboard rects, duration and animation options)*/
-	private func generateDataForKeyboardNotification(userInfo: [NSObject:AnyObject]) -> (endRect: CGRect, beginRect: CGRect, duration: Double, option: UIViewAnimationOptions) {
-		let endKeyboardRect =  userInfo[UIKeyboardFrameEndUserInfoKey]?.CGRectValue ?? CGRectZero
-		let beginKeyboardRect = userInfo[UIKeyboardFrameBeginUserInfoKey]?.CGRectValue ?? CGRectZero
-		let duration = userInfo[UIKeyboardAnimationDurationUserInfoKey]?.doubleValue ?? 0.0
-		let curve = UIViewAnimationCurve(rawValue:userInfo[UIKeyboardAnimationCurveUserInfoKey]?.integerValue ?? 0) ?? UIViewAnimationCurve.Linear
+	fileprivate func generateDataForKeyboardNotification(_ userInfo: [AnyHashable: Any]) -> (endRect: CGRect, beginRect: CGRect, duration: Double, option: UIViewAnimationOptions) {
+		let endKeyboardRect =  (userInfo[UIKeyboardFrameEndUserInfoKey] as AnyObject).cgRectValue ?? CGRect.zero
+		let beginKeyboardRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as AnyObject).cgRectValue ?? CGRect.zero
+		let duration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as AnyObject).doubleValue ?? 0.0
+		let curve = UIViewAnimationCurve(rawValue:(userInfo[UIKeyboardAnimationCurveUserInfoKey] as AnyObject).intValue ?? 0) ?? UIViewAnimationCurve.linear
 		let animationOption = UIAnimationOptionsFromCurve(curve)
 		
 		return (endRect: endKeyboardRect, beginRect: beginKeyboardRect, duration: duration, option: animationOption)
@@ -224,20 +224,20 @@ private var isObservingNotificationsKey: UInt8 = 3
 
 public extension NSObject {
 	
-	private var keyboardSize: CGSize {
+	fileprivate var keyboardSize: CGSize {
 		get {
 			if let size = objc_getAssociatedObject(self, &keyboardSizeKey) {
-				return size.CGSizeValue()
+				return (size as AnyObject).cgSizeValue
 			}
 			return CGSize.zero
 		}
 		set (value) {
-			objc_setAssociatedObject(self, &keyboardSizeKey, NSValue(CGSize:value), objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+			objc_setAssociatedObject(self, &keyboardSizeKey, NSValue(cgSize:value), objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 		}
 	}
 	
 	/** Keyboard Notification Closure */
-	private var notificationClosure: KeyboardNotificationBlock? {
+	fileprivate var notificationClosure: KeyboardNotificationBlock? {
 		get {
 			let object = objc_getAssociatedObject(self, &keyboardNotificationHandlerClosureKey)
 			let wrapper = object as? KeyboardNotificationHandlerWrapper
