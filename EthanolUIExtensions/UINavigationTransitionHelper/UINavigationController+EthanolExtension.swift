@@ -180,7 +180,7 @@ public extension UINavigationController {
 		objc_setAssociatedObject(viewController, &TransitionOptionKey, reverseOptionsContainer, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 		
 		let titleString = self.eth_currentBackButtonTitle ?? ""
-		viewController.navigationItem.setCustomBackButtonWithTitle(titleString, target: viewController, selector: "eth_backButtonTapped")
+		viewController.navigationItem.setCustomBackButtonWithTitle(titleString, target: viewController, selector: #selector(UIViewController.eth_backButtonTapped))
 	}
 	
 	/**
