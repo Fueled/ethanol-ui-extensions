@@ -124,13 +124,17 @@ public extension NSObject {
 	/** Read Only variable for determining if the object in question is currently observing keyboard Notifications */
 	final fileprivate (set) public var eth_observingNotifications: Bool {
 		get {
-			return (objc_getAssociatedObject(self, &isObservingNotificationsKey) as AnyObject).boolValue ?? false
+			if let associatedObject = objc_getAssociatedObject(self, &isObservingNotificationsKey) {
+				return (associatedObject as AnyObject).boolValue ?? false
+			} else {
+				return false
+			}
 		}
 		set (value) {
 			objc_setAssociatedObject(self, &isObservingNotificationsKey, NSNumber(value: value as Bool), objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 		}
 	}
-	
+
 }
 
 
@@ -138,7 +142,7 @@ public extension NSObject {
 /** Private Methods */
 
 public extension NSObject {
-	
+
 	fileprivate func registerForKeyboardNotifications() {
 		//Adding Observers with blocks to avoid conflict with namespaces of owning NSObjects
 		

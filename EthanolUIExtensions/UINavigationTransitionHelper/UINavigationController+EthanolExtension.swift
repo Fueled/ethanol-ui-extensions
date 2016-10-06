@@ -132,7 +132,7 @@ public extension UIWindow {
 	public func eth_transitionToNewRootViewController(_ viewController: UIViewController, options: ETHAnimatedTransitionNewRootOptions, transitionOption: UIViewAnimationOptions, completionHandler: ((Bool) -> Void)?) -> UIViewController?  {
 		var resultViewController: UIViewController? = nil;
 		if(options.contains(.NavigationController)) {
-			if let navigationController = ETHInjector().instance(for: UINavigationController.self) as? UINavigationController {
+			if let navigationController = ETHInjector().classInstance(for: UINavigationController.self) as? UINavigationController {
 				navigationController.viewControllers = [viewController]
 				resultViewController = navigationController
 			}
