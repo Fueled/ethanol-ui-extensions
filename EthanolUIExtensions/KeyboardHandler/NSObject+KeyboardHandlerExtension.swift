@@ -209,10 +209,10 @@ public extension NSObject {
 	
 	/** Internal Method to Calculate data from Keyboard Hide/Show Notifications = (keyboard rects, duration and animation options)*/
 	fileprivate func generateDataForKeyboardNotification(_ userInfo: [AnyHashable: Any]) -> (endRect: CGRect, beginRect: CGRect, duration: Double, option: UIViewAnimationOptions) {
-		let endKeyboardRect =  (userInfo[UIKeyboardFrameEndUserInfoKey] as AnyObject).cgRectValue ?? CGRect.zero
-		let beginKeyboardRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as AnyObject).cgRectValue ?? CGRect.zero
-		let duration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as AnyObject).doubleValue ?? 0.0
-		let curve = UIViewAnimationCurve(rawValue:(userInfo[UIKeyboardAnimationCurveUserInfoKey] as AnyObject).intValue ?? 0) ?? UIViewAnimationCurve.linear
+		let endKeyboardRect =  (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue ?? CGRect.zero
+		let beginKeyboardRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue ?? CGRect.zero
+		let duration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as? Double) ?? 0.0
+		let curve = UIViewAnimationCurve(rawValue: userInfo[UIKeyboardAnimationCurveUserInfoKey] as? Int ?? 0) ?? UIViewAnimationCurve.linear
 		let animationOption = UIAnimationOptionsFromCurve(curve)
 		
 		return (endRect: endKeyboardRect, beginRect: beginKeyboardRect, duration: duration, option: animationOption)
