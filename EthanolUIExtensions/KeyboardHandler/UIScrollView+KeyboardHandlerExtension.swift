@@ -119,7 +119,7 @@ public extension UIScrollView {
 		
 		let currentShowState = isShowing ? "show" : "hide"
 		
-		ETHLogTrace("\(self) :Calling defaultKeyboardNotificationBlock: \(currentShowState), \(startKeyboardRect), \(endKeyboardRect), \(duration), \(options)")
+		ETHLogTrace(message: "\(self) :Calling defaultKeyboardNotificationBlock: \(currentShowState), \(startKeyboardRect), \(endKeyboardRect), \(duration), \(options)")
 		
 		// Dont handle didshow/didhide states for a scrollview by default.
 		if notificationState == .didShow || notificationState == .didHide {
@@ -151,14 +151,14 @@ public extension UIScrollView {
 			if absoluteHeight >= (screenBounds.size.height - endKeyboardRect.size.height) {
 				var offset = max(0.0, screenBounds.size.height-absoluteHeight)
 				
-				ETHLogVerbose("\(self) : KeyboardNotificationBlock Show : Base offset is \(offset), keyboard offset is \(keyboardOffset)")
+				ETHLogVerbose(message: "\(self) : KeyboardNotificationBlock Show : Base offset is \(offset), keyboard offset is \(keyboardOffset)")
 				offset -= keyboardOffset
 				offset = endKeyboardRect.size.height - offset
 				
 				
-				ETHLogDebug("\(self) : Keyboard notification block (show): calculated offset is \(offset) (Initial bottom offset: \(bottomInset))")
+				ETHLogDebug(message: "\(self) : Keyboard notification block (show): calculated offset is \(offset) (Initial bottom offset: \(bottomInset))")
 				
-				ETHLogVerbose("\(self) : Keyboard notification block (show): initial indicator offset is \(indicatorBottomInset)")
+				ETHLogVerbose(message: "\(self) : Keyboard notification block (show): initial indicator offset is \(indicatorBottomInset)")
 				
 				
 				let animationClosure = { ()->() in
@@ -179,15 +179,15 @@ public extension UIScrollView {
 						animationClosure()
 				})
 			} else {
-				ETHLogInfo("\(self) : No need to reduce any viewable area, the keyboard is not interfering with the scrollview")
+				ETHLogInfo(message: "\(self) : No need to reduce any viewable area, the keyboard is not interfering with the scrollview")
 			}
 		} else {
 			let bottomInset:CGFloat = self.scrollViewBottomInset ?? 0.0
 			let indicatorBottomInset:CGFloat = self.scrollViewIndicatorBottomInset ?? 0.0
 			
-			ETHLogDebug("\(self) : Keyboard notification block (hide): initial offset is \(bottomInset)")
+			ETHLogDebug(message: "\(self) : Keyboard notification block (hide): initial offset is \(bottomInset)")
 			
-			ETHLogVerbose ("\(self) : Keyboard notification block (hide): initial indicator offset is \(indicatorBottomInset)")
+			ETHLogVerbose (message: "\(self) : Keyboard notification block (hide): initial indicator offset is \(indicatorBottomInset)")
 			
 			let animationClosure = { ()->() in
 				var edgeInsets = self.contentInset
