@@ -90,7 +90,7 @@ public extension NSObject {
 		NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardDidShow, object: nil)
 		NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardDidHide, object: nil)
 		NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-		ETHLogDebug("DERegistered Observers for keyboard Notification for object \(self) of class \(ClassName)")
+		ETHLogDebug(message: "DERegistered Observers for keyboard Notification for object \(self) of class \(ClassName)")
 	}
 	
 	/** Read Only variable to describe Keyboard State */
@@ -203,7 +203,7 @@ public extension NSObject {
 		if let closure = self.notificationClosure {
 			closure(isShowing, notificationState, startKeyboardRect, endKeyboardRect, duration, options)
 		} else {
-			ETHLogWarning("ETHLogWarn: There is no closure supplied to handle responses for Keyboard Notifications to object \(self)")
+			ETHLogWarning(message: "ETHLogWarn: There is no closure supplied to handle responses for Keyboard Notifications to object \(self)")
 		}
 	}
 	
