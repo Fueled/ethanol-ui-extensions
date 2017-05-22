@@ -1,3 +1,3 @@
-github "CocoaLumberjack/CocoaLumberjack" "3.0.0"
-github "Fueled/ethanol-utilities" "40f716d3005952bd05f3037e2eb2a0388f54ea32"
-github "Fueled/ethanol-tools" "0ae15e8265e85459045dffcccc4588f9cfb1bceb"
+github "CocoaLumberjack/CocoaLumberjack" "3.2.0"
+github "Fueled/ethanol-tools" "0.1.16"
+github "Fueled/ethanol-utilities" "0.1.15"
