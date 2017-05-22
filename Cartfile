@@ -1,2 +1,2 @@
-github "Fueled/ethanol-tools" ~> 0.1
-github "Fueled/ethanol-utilities" ~> 0.1
+github "Fueled/ethanol-tools" "swift-3"
+github "Fueled/ethanol-utilities" "swift-3"

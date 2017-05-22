@@ -42,7 +42,7 @@ extension UINavigationItem {
 	*  @param selector The selector to be executed on tapping custom back button.
 	*/
 	
-	public func setCustomBackButtonWithTitle(title: String, target: AnyObject, selector: Selector) -> Void {
+	public func setCustomBackButtonWithTitle(_ title: String, target: AnyObject, selector: Selector) -> Void {
 		self.setCustomBackButtonWithTitle(title, image: nil, target: target, selector: selector)
 	}
 	
@@ -54,7 +54,7 @@ extension UINavigationItem {
 	*  @param selector The selector to be executed on tapping custom back button.
 	*/
 	
-	public func setCustomBackButtonWithImageName(image: UIImage, target: AnyObject, selector: Selector) -> Void {
+	public func setCustomBackButtonWithImageName(_ image: UIImage, target: AnyObject, selector: Selector) -> Void {
 		self.setCustomBackButtonWithTitle(nil, image: image, target: target, selector: selector)
 	}
 	
@@ -66,25 +66,25 @@ extension UINavigationItem {
 	*  @param selector The selector to be executed on tapping custom back button.
 	*/
 	
-	public func setCustomBackButtonWithTitle(title: String? , image: UIImage?, target: AnyObject, selector: Selector) -> Void {
+	public func setCustomBackButtonWithTitle(_ title: String? , image: UIImage?, target: AnyObject, selector: Selector) -> Void {
 		self.hidesBackButton = true
-		let backButton = UIButton(type: UIButtonType.Custom)
-		backButton.exclusiveTouch = true
-		let frame = CGRectMake(0.0, 0.0, kBackButtonWidth, kBackButtonHeight)
+		let backButton = UIButton(type: UIButtonType.custom)
+		backButton.isExclusiveTouch = true
+		let frame = CGRect(x: 0.0, y: 0.0, width: kBackButtonWidth, height: kBackButtonHeight)
 		backButton.frame = frame
 		
 		var imageWidth: CGFloat = 0.0
 		if let image = image {
 			imageWidth = image.size.width
-			backButton.setImage(image, forState: UIControlState.Normal)
+			backButton.setImage(image, for: UIControlState())
 		}
 		
 		if let title = title {
-			backButton.setTitle(title, forState: UIControlState.Normal)
-			backButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
+			backButton.setTitle(title, for: UIControlState())
+			backButton.setTitleColor(UIColor.black, for: UIControlState())
 		}
 		
-		backButton.addTarget(target, action: selector, forControlEvents: UIControlEvents.TouchUpInside)
+		backButton.addTarget(target, action: selector, for: UIControlEvents.touchUpInside)
 		let edgeInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, kBackButtonWidth - imageWidth)
 		backButton.imageEdgeInsets = edgeInsets
 		
@@ -109,7 +109,7 @@ extension UINavigationItem {
 	
 	public var customBackButtonTitle: String? {
 		get {
-			return self.customBackButton?.titleForState(UIControlState.Normal)
+			return self.customBackButton?.title(for: UIControlState())
 		}
 	}
 	
@@ -121,7 +121,7 @@ extension UINavigationItem {
 	*  customBackButton An optional 'UIButton' object representing custom back button.
 	*/
 	
-	private (set)  public var customBackButton: UIButton? {
+	fileprivate (set)  public var customBackButton: UIButton? {
 		get {
 			return objc_getAssociatedObject(self, &customBackButtonKey) as? UIButton
 		}
@@ -149,14 +149,14 @@ extension UINavigationItem {
 			}
 			
 			label.attributedText = attributedTitle
-			label.textAlignment = NSTextAlignment.Center
+			label.textAlignment = NSTextAlignment.center
 			label.sizeToFit()
 		}
 	}
 	
-	private func labelForAttributedTitle() -> UILabel? {
+	fileprivate func labelForAttributedTitle() -> UILabel? {
 		var label : UILabel? = nil
-		if let currentLabel = self.titleView as? UILabel where currentLabel.tag == kAttributedTitleLabelTag {
+		if let currentLabel = self.titleView as? UILabel , currentLabel.tag == kAttributedTitleLabelTag {
 			label = currentLabel
 		}
 		return label
